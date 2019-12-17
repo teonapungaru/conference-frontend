@@ -13,8 +13,9 @@ import './card.sass'
 
 const styles = {
   card: {
-      maxWidth: 300,
-      margin: 20
+      maxWidth: 600,
+      margin: 20,
+      borderRadius: 15
   }
 };
 
@@ -35,14 +36,7 @@ class ImgMediaCard extends React.Component {
           <CardActionArea onClick={()=>{this.props.history.push('/login')}}>
             <div className="card">
               <div className="card-img">
-              <CardMedia
-                component="img"
-                alt="logo"
-                height="100"
-                width="100"
-                image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_J9Zwnx1awpQAmUDV3iSKtBETKRujdYMnhvEm8xIRbf3DKnkD&s"
-                title="logo"
-              />
+              <img className='card-image' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_J9Zwnx1awpQAmUDV3iSKtBETKRujdYMnhvEm8xIRbf3DKnkD&s'/>
               </div>
               <div className="card-content">
                 <CardContent>
