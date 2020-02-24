@@ -4,6 +4,8 @@ import {withRouter} from "react-router-dom";
 import './login.sass';
 import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 
+import makeRequest from '../../../service/dataservice'
+
 
 class Login extends Component {
 
@@ -17,8 +19,21 @@ class Login extends Component {
     this.setState({ [prop]: event.target.value });
   };
 
-  handleSubmit = () => {
-    // your submit logic
+  handleSubmit = async (event) => {
+
+    const concatCred = `${this.state.email}:${this.state.password}`;
+    const credentials = btoa(concatCred);
+
+    try {
+      const response = await makeRequest('signin', { credentials: { credentials } });
+
+      localStorage.setItem('token', response.accessToken);
+      this.props.history.push('/home');
+    } catch (err) {
+      this.setState({
+        disableForm: false,
+      })
+    }
   };
 
   setToLocalStorage = (image, imageSrc) => {

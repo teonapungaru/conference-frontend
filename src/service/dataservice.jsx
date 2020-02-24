@@ -1,18 +1,18 @@
 import axios from 'axios';
 
-import { navigation } from '../config/path';
+import { navigation } from '../components/config/path';
 
 const METHODS = {
     GET: 'GET',
     POST: 'POST'
 }
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://localhost:5000';
 
 const CONFIG = {
     'signin': {
         method: METHODS.POST,
-        url: `${BASE_URL}/api/v1/auth/signin`,
+        url: `${BASE_URL}/api/auth`,
         autheticated: false
     }
 }
