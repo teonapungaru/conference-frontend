@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import WelcomePage from './components/WelcomePage'
 import Header from './components/Header'
+import Home from './components/Home'
 import isAuthenticated from './components/Auth/requiresAuth';
 
 import './App.sass';
@@ -15,7 +16,7 @@ class App extends Component {
             <Switch> 
               <Route path="/welcome" component={WelcomePage} />        
               <Route path="/login" component={Login} />
-              <Route path="/home" component={isAuthenticated(Header)} />
+              <Route path="/home" component={Home} />
 
               <Route component={WelcomePage} />
             </Switch>

@@ -18,7 +18,7 @@ const colorScheme = createMuiTheme({
     },
     typography: {
         useNextVariants: true
-    }
+    },
 });
 
 class Header extends Component {
@@ -26,13 +26,22 @@ class Header extends Component {
     render() {
         return (
             <MuiThemeProvider theme={colorScheme}>
-                <div>
+                <div className="home">
+                    <div className="conf-img">
+                        <img className="home-img" src="http://www.icstcc2017.ac.tuiasi.ro/wp-content/uploads/sites/16/2016/11/ICSTCC_logo2.jpg" />
+                    </div>
+                    <div className="title">
+                        21st International Conference on System Theory, Control and Computing
+                    </div>
+                    <div style={{width: '100%'}}>
                     <AppBar position="static">
                         <Toolbar className="toolbar">
                             <TopBar />
                         </Toolbar>
                     </AppBar>
+                    </div>
                 </div>
+                
                {/* { <Route exact path={`${this.props.match.path}`} component={Home} />
                 <Route exact path={`${this.props.match.path}cars`} component={Program} />
                 <Route exact path={`${this.props.match.path}customers`} component={Committees} />} */}

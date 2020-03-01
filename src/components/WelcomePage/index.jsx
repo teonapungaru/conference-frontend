@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import ImgMediaCard from '../Card'
+import ButtonAppBar from '../ButtonAppBar/index';
 
 class WelcomePage extends Component {
 
@@ -12,7 +13,12 @@ class WelcomePage extends Component {
 
     render() {
         return (
-            <ImgMediaCard />    
+            <div>
+                <div>
+                    <ButtonAppBar />
+                </div>
+                <ImgMediaCard />  
+            </div> 
         )
     }
 }

@@ -39,6 +39,31 @@ class TopBar extends React.Component {
         this.handleClose();
         this.props.history.push(navigation.committees);
     }
+    
+    goToSpeakers = () => {
+        this.handleClose();
+        this.props.history.push(navigation.speakers);
+    }
+
+    goToAuthors = () => {
+        this.handleClose();
+        this.props.history.push(navigation.authors);
+    }
+
+    goToRegistration = () => {
+        this.handleClose();
+        this.props.history.push(navigation.registration);
+    }
+
+    goToPapers = () => {
+        this.handleClose();
+        this.props.history.push(navigation.papers);
+    }
+
+    goToAccommodation = () => {
+        this.handleClose();
+        this.props.history.push(navigation.accommodation);
+    }
 
     render() {
         const { anchorEl } = this.state;
@@ -48,6 +73,11 @@ class TopBar extends React.Component {
                 <Button onClick={this.goToHome}>Home</Button>
                 <Button onClick={this.goToProgram}>Program</Button>
                 <Button onClick={this.goToCommittees}>Committees</Button>
+                <Button onClick={this.goToSpeakers}>Plenary Speakers</Button>
+                <Button onClick={this.goToAuthors}>Authors</Button>
+                <Button onClick={this.goToRegistration}>Registration</Button>
+                <Button onClick={this.goToPapers}>Call For Papers</Button>
+                <Button onClick={this.goToAccommodation}>Accommodation and Travel</Button>
 
                 <ClickAwayListener onClickAway={this.handleClose}>
                     <Menu
