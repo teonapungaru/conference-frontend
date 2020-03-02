@@ -5,7 +5,7 @@ import Header from '../Header'
 import '../Home/home.sass'
 
 
-class Home extends Component {
+class Authors extends Component {
 
     constructor(props) {
         super(props);
@@ -15,11 +15,11 @@ class Home extends Component {
 
     render() {
         return (
-            <p>
-                tydcfikhgmhynxrdtfgh
-            </p>
+        <div>
+            AAAAAAAAAAAAAAAAAAAAAAAAAa
+        </div>
         )
     }
 }
 
-export default withRouter(Home)
+export default withRouter(Authors)

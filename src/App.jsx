@@ -4,6 +4,7 @@ import Login from './components/Auth/Login';
 import WelcomePage from './components/WelcomePage'
 import Header from './components/Header'
 import Home from './components/Home'
+import Authors from './components/Authors'
 import isAuthenticated from './components/Auth/requiresAuth';
 
 import './App.sass';
@@ -16,9 +17,10 @@ class App extends Component {
             <Switch> 
               <Route path="/welcome" component={WelcomePage} />        
               <Route path="/login" component={Login} />
-              <Route path="/home" component={Home} />
+              <Route path="/" component={Header} />
+             
 
-              <Route component={WelcomePage} />
+              
             </Switch>
           </div>
         </Router>

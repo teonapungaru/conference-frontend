@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter, Route } from 'react-router-dom';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { AppBar, Toolbar } from '@material-ui/core';
+import Authors from '../Authors'
 
 
 import TopBar from '../TopBar/index.jsx';
@@ -26,6 +27,7 @@ class Header extends Component {
     render() {
         return (
             <MuiThemeProvider theme={colorScheme}>
+                <div className="home-window">
                 <div className="home">
                     <div className="conf-img">
                         <img className="home-img" src="http://www.icstcc2017.ac.tuiasi.ro/wp-content/uploads/sites/16/2016/11/ICSTCC_logo2.jpg" />
@@ -41,10 +43,9 @@ class Header extends Component {
                     </AppBar>
                     </div>
                 </div>
+                </div>
                 
-               {/* { <Route exact path={`${this.props.match.path}`} component={Home} />
-                <Route exact path={`${this.props.match.path}cars`} component={Program} />
-                <Route exact path={`${this.props.match.path}customers`} component={Committees} />} */}
+                <Route exact path={`${this.props.match.path}authors`} component={Authors} />
             </MuiThemeProvider>
         )
     }
