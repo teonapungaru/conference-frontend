@@ -15,9 +15,9 @@ class Home extends Component {
 
     render() {
         return (
-            <p>
+            <div>
                 tydcfikhgmhynxrdtfgh
-            </p>
+            </div>
         )
     }
 }

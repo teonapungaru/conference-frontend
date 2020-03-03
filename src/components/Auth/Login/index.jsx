@@ -3,6 +3,7 @@ import {withRouter} from "react-router-dom";
 
 import './login.sass';
 import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
+import {Snackbars, SNACKBAR_TYPE} from '../../Snackbar';
 
 import makeRequest from '../../../service/dataservice'
 
@@ -32,6 +33,9 @@ class Login extends Component {
     } catch (err) {
       this.setState({
         disableForm: false,
+        snackbarMessage: err,
+        snackbarVariant: SNACKBAR_TYPE.error,
+        openSnackbar: true
       })
     }
   };

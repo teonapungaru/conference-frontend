@@ -27,13 +27,18 @@ class ImgMediaCard extends React.Component {
     this.state = {};
   }
 
+  clickedCard = () => {
+    sessionStorage.setItem('clickedCard', true);
+    this.props.history.push('/home');
+  }
+
   render() {
     const { classes } = this.props;
 
     return (
       <div className="container">
         <Card className={classes.card}>
-          <CardActionArea onClick={()=>{this.props.history.push('/home')}}>
+          <CardActionArea onClick={this.clickedCard}>
             <div className="card">
               <div className="card-img">
               <img className='card-image' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_J9Zwnx1awpQAmUDV3iSKtBETKRujdYMnhvEm8xIRbf3DKnkD&s'/>
