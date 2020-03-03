@@ -5,6 +5,7 @@ import WelcomePage from './components/WelcomePage'
 import Header from './components/Header'
 import Home from './components/Home'
 import Authors from './components/Authors'
+import AddConference from './components/AddConference'
 import isAuthenticated from './components/Auth/requiresAuth';
 import clicked from './config/clickedComponent'
 
@@ -18,6 +19,7 @@ class App extends Component {
             <Switch> 
               <Route path="/welcome" component={WelcomePage} />        
               <Route path="/login" component={Login} />
+              <Route path="/addConf" component={AddConference} />
               <Route path="/" component={clicked(Header)} />
              
               <Route component={WelcomePage} />
