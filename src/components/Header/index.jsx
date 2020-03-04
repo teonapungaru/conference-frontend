@@ -39,14 +39,13 @@ class Header extends Component {
                             21st International Conference on System Theory, Control and Computing
                         </div>
                         <div style={{width: '100%'}}>
-                        <AppBar position="static">
+                        <AppBar position="static" className="hidingStuff">
                             <Toolbar className="toolbar">
-                                <TopBar />
+                                <TopBar className="topbar"/>
                             </Toolbar>
                         </AppBar>
                         </div>
                     </div>
-                </div>
 
                 <Route exact path={`${this.props.match.path}home`} component={Home} />
                 {/*<Route exact path={`${this.props.match.path}program`} component={Program} />
@@ -58,6 +57,8 @@ class Header extends Component {
                 <Route exact path={`${this.props.match.path}papers`} component={Papers} />
                 <Route exact path={`${this.props.match.path}accommodation`} component={Accommodation} />
                 */}
+            </div>
+
             </MuiThemeProvider>
         )
     }

@@ -1,12 +1,14 @@
+html, body, #root
+  height: 100%
+
 .toolbar
   display: flex
   align-items: center
   justify-content: space-between
-
-.MuiPaper-root.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-positionStatic.MuiAppBar-colorPrimary
   box-shadow: none
   border-top: 1px #A0A0A0 solid
   border-bottom: 1px #A0A0A0 solid
+  padding: 0px !important
 
 .home-window
     background-color: #f2f2f2
@@ -19,8 +21,8 @@
 
 .home
   width: 70%
-  padding: 30px
   background-color: white
+  padding: 20px
   display: flex
   flex-direction: column
   justify-content: center
@@ -30,7 +32,7 @@
 .conf-img
     display: flex
     width: 100%
-    height: 10%
+    height: 40%
 
 
 .home-img
@@ -44,3 +46,9 @@
     text-align: center
     padding-top: 1%
     padding-bottom: 5%
+
+.hidingStuff
+  box-shadow: none !important
+
+.topbar
+  text-transform: capitalize !important

@@ -70,14 +70,14 @@ class TopBar extends React.Component {
 
         return (
             <div className="buttons">
-                <Button onClick={this.goToHome}>Home</Button>
-                <Button onClick={this.goToProgram}>Program</Button>
-                <Button onClick={this.goToCommittees}>Committees</Button>
-                <Button onClick={this.goToSpeakers}>Plenary Speakers</Button>
-                <Button onClick={this.goToAuthors}>Authors</Button>
-                <Button onClick={this.goToRegistration}>Registration</Button>
-                <Button onClick={this.goToPapers}>Call For Papers</Button>
-                <Button onClick={this.goToAccommodation}>Accommodation and Travel</Button>
+                <Button onClick={this.goToHome} className="button">Home</Button>
+                <Button onClick={this.goToProgram} className="button">Program</Button>
+                <Button onClick={this.goToCommittees} className="button">Committees</Button>
+                <Button onClick={this.goToSpeakers} className="button">Plenary Speakers</Button>
+                <Button onClick={this.goToAuthors} className="button">Authors</Button>
+                <Button onClick={this.goToRegistration} className="button">Registration</Button>
+                <Button onClick={this.goToPapers} className="button">Call For Papers</Button>
+                <Button onClick={this.goToAccommodation} className="button">Accommodation and Travel</Button>
 
                 <ClickAwayListener onClickAway={this.handleClose}>
                     <Menu
