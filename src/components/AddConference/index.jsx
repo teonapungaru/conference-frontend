@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 
+import Dropzone from 'react-dropzone';
+import logo from '../../assets/img-placeholder.png';
+
 import DayPicker from 'react-day-picker';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
@@ -29,8 +32,31 @@ class AddConference extends Component {
 
         this.state = {
             conferenceName: '',
+            startDate: '',
+            endDate: '',
+            files: [],
+            uploadedImage: logo,
+            uploadText: 'Upload logo',
+            showUploadText: false,
+            logoImage: localStorage.getItem('logoImage') || logo,
         }
     }
+
+    onDrop(files) {
+        this.setState({ uploadText: 'Uploading', showUploadText: true })
+        //this.uploadImage(files[0]);
+    }
+
+    onCancel() {
+        console.log('onCancel');
+        this.setState({
+            files: []
+        });
+    }
+
+    handleClose = () => {
+        this.setState({ open: false });
+    };
 
     handleChange = prop => event => {
         this.setState({
@@ -38,17 +64,36 @@ class AddConference extends Component {
         });
     };
 
+    handleDayChange = prop => value => {
+        this.setState({ [prop]: value });
+    };
+
     disableSubmit = () => !(this.state.conferenceName) ? true : false
 
     render() {
+        console.log(this.state)
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <React.Fragment>
-                    <p className="textAddUser">Add New Conference</p>
-                    <div className="add-user-container">
+                    <p className="textAddConference">Add New Conference</p>
+                    <div className="add-conference-container">
+                        <div className="dropzone-parent">
+                            <Dropzone
+                                className="dropzone"
+                                accept="image/jpeg, image/png"
+                                multiple={false}
+                                onDrop={this.onDrop.bind(this)}
+                                onFileDialogCancel={this.onCancel.bind(this)}
+                            >
+                                <div className="logo">
+                                    <img src={this.state.logoImage} width="200" height="200" alt="Logo" />
+                                    <span className={this.state.showUploadText ? "show" : ""}>{this.state.uploadText}</span>
+                                </div>
+                            </Dropzone>
+                        </div>
                         <ValidatorForm
                             ref="form"
-                            className="form-add-user"
+                            className="form-add-conference"
                             onSubmit={this.addConference}
                             onError={errors => console.log(errors)}
                         >
@@ -77,7 +122,7 @@ class AddConference extends Component {
                             <TextValidator
                                 name="country"
                                 className="width"
-                                label="Location"
+                                label="Country"
                                 disabled={this.state.disableForm}
                                 value={this.state.country}
                                 onChange={this.handleChange('country')}
@@ -85,17 +130,23 @@ class AddConference extends Component {
                                 errorMessages={['This field is required']}
                                 required
                             />
-                            <DayPickerInput
-                                placeholder="Start Date"
-                                required
-                            />
-                            <DayPickerInput
-                                placeholder="End Date"
-                                required
-                            />
+                            <div className="day-picker">
+                                <DayPickerInput
+                                    value={this.state.startDate}
+                                    onDayChange={this.handleDayChange('startDate')}
+                                    placeholder="Start Date"
+                                    required
+                                />
+                                <DayPickerInput
+                                    value={this.state.endDate}
+                                    onDayChange={this.handleDayChange('endDate')}
+                                    placeholder="End Date"
+                                    required
+                                />
+                            </div>
 
                             <input color="primary"
-                                className={`buttonAddUser${this.disableSubmit() ? ' disabled' : ''}`}
+                                className={`buttonAddConference${this.disableSubmit() ? ' disabled' : ''}`}
                                 //disabled={this.disableSubmit() || this.state.disableForm}
                                 type="submit"
                                 value="Add Conference"

@@ -1,15 +1,18 @@
-.add-user-container
+.add-conference-container
   display: flex
-  flex-direction: row
+  flex-direction: column
   justify-content: center
-  flex: 1 1
-  width: 100%
 
-.form-add-user
+.form-add-conference
   width: 45%
-  height: 80%
+  height: 60%
+  display: flex
+  justify-content: column
+  flex-direction: column
+  justify-content: center
+  align-self: center
 
-.buttonAddUser
+.buttonAddConference
   align-items: center
   width: 100%
   margin: 10px 0px 20px 0px
@@ -24,7 +27,7 @@
     background-color: #c6c3c3
     cursor: default
 
-.textAddUser
+.textAddConference
   text-align: center
   color: rgb(31,75,107)
   font-size: 25px
@@ -43,3 +46,50 @@
 .MuiInputBase-input-178.MuiInput-input-163.MuiInputBase-inputType-181.MuiInput-inputType-166
   padding-top: 2px
   padding-bottom: 0px
+
+.day-picker
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+  height: 80px
+  margin: 21px 0 15px 0
+
+.DayPickerInput
+  display: flex
+  border-radius: 20%
+  input
+    border-radius: 5px
+    border-style: solid
+    border-width: 1px
+    border-color: darkgrey
+    height: 30px
+
+.dropzone
+  width: 200px
+  height: 200px
+  margin: 0 auto
+  cursor: pointer
+      
+.logo
+  display: block
+  position: relative
+  img
+    border-radius: 50%
+  
+  span
+    display: none
+    position: absolute
+    bottom: 30%
+    left: 0
+    right: 0
+    width: 80%
+    padding: 5px
+    margin: 0 auto
+    background: gray
+    color: white
+    border-radius: 5px
+    font-size: 12px
+    &.show
+      display: block
+  &:hover span
+    display: block
