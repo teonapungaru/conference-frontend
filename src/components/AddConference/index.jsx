@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 
 import Dropzone from 'react-dropzone';
 import logo from '../../assets/img-placeholder.png';
+import fileImg from '../../assets/file_placeholder.png';
 
 import DayPicker from 'react-day-picker';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
@@ -12,8 +13,6 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Checkbox, FormControlLabel, TextField, Select, FormControl, MenuItem } from '@material-ui/core';
 import { Snackbars, SNACKBAR_TYPE } from '../Snackbar';
-
-//import { TimeInput } from "material-ui-time-picker";
 
 import makeRequest from '../../service/dataservice';
 
@@ -36,7 +35,7 @@ class AddConference extends Component {
             endDate: '',
             files: [],
             uploadedImage: logo,
-            uploadText: 'Upload logo',
+            uploadText: 'Upload file',
             showUploadText: false,
             logoImage: localStorage.getItem('logoImage') || logo,
         }
@@ -86,7 +85,21 @@ class AddConference extends Component {
                                 onFileDialogCancel={this.onCancel.bind(this)}
                             >
                                 <div className="logo">
-                                    <img src={this.state.logoImage} width="200" height="200" alt="Logo" />
+                                    <p>Logo</p>
+                                    <img src={this.state.logoImage} width="150" height="150" alt="Logo" />
+                                    <span className={this.state.showUploadText ? "show" : ""}>{this.state.uploadText}</span>
+                                </div>
+                            </Dropzone>
+                            <Dropzone
+                                className="dropzone"
+                                accept=".txt, .doc"
+                                multiple={false}
+                                onDrop={this.onDrop.bind(this)}
+                                onFileDialogCancel={this.onCancel.bind(this)}
+                            >
+                                <div className="logo">
+                                    <p>Description</p>
+                                    <img src={fileImg} width="150" height="150" alt="File" />
                                     <span className={this.state.showUploadText ? "show" : ""}>{this.state.uploadText}</span>
                                 </div>
                             </Dropzone>
