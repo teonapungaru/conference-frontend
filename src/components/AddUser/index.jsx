@@ -22,7 +22,7 @@ class AddUser extends Component {
   roles = [
     {
       id: 1,
-      name:'Participant'
+      name: 'Participant'
     },
     {
       id: 2,
@@ -43,7 +43,8 @@ class AddUser extends Component {
       email: '',
       disableForm: false,
       //role: this.roles[0].name,
-      roleId: this.roles[0].id
+      roleId: this.roles[0].id,
+      addAnother: false
     }
 
     this.initialState = this.state;
@@ -59,32 +60,45 @@ class AddUser extends Component {
     });
   };
 
-  updateIsActiveValue() {
-    this.setState({ isActive: !this.state.isActive });
+  updateAddAnother() {
+    this.setState({ addAnother: !this.state.addAnother });
   }
 
   disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email && this.state.roleId) ? true : false
 
-  addUser = async () => {
-    this.setState({ disableForm: true });
-    try {
-      const response = await makeRequest('addUser', {
-        data: {}
-      });
-      this.setState(
-        Object.assign({}, this.initialState, {
-          roles: this.state.roles,
-          snackbarVariant: SNACKBAR_TYPE.success,
-          snackbarMessage: response,
-          openSnackbar: true
-        }));
-    } catch (err) {
+  addUser = () => {
+    //this.setState({ disableForm: true });
+    // try {
+    //   const response = await makeRequest('addUser', {
+    //     data: {}
+    //   });
+    //   this.setState(
+    //     Object.assign({}, this.initialState, {
+    //       roles: this.state.roles,
+    //       snackbarVariant: SNACKBAR_TYPE.success,
+    //       snackbarMessage: response,
+    //       openSnackbar: true
+    //     }));
+    // } catch (err) {
+    //   this.setState({
+    //     disableForm: false,
+    //     snackbarMessage: err,
+    //     snackbarVariant: SNACKBAR_TYPE.error,
+    //     openSnackbar: true
+    //   });
+    // }
+
+    console.log(this.state.addAnother, 'add')
+    if (this.state.addAnother) {
       this.setState({
-        disableForm: false,
-        snackbarMessage: err,
-        snackbarVariant: SNACKBAR_TYPE.error,
-        openSnackbar: true
-      });
+        lastName: '',
+        firstName: '',
+        email: '',
+        roleId: this.roles[0].id
+      })
+      //this.refs.form.reset()
+    } else {
+      this.props.closeModal();
     }
   }
 
@@ -100,73 +114,86 @@ class AddUser extends Component {
             <div className="search">
               <SearchBar />
             </div>
-          <div className="paddingInput">
-            <ValidatorForm
-              ref="form"
-              className="form-add-user"
-              onSubmit={this.addUser}
-              onError={errors => console.log(errors)}
-            >
-              <TextValidator
-                name="lastName"
-                className="width"
-                label="Last name"
-                disabled={this.state.disableForm}
-                value={this.state.kid}
-                onChange={this.handleChange('lastName')}
-                validators={['required']}
-                errorMessages={['This field is required']}
-                required
-              />
-              <TextValidator
-                name="firstName"
-                className="width"
-                label="First name"
-                disabled={this.state.disableForm}
-                value={this.state.firstName}
-                onChange={this.handleChange('firstName')}
-                validators={['required']}
-                errorMessages={['This field is required']}
-                required
-              />
-              <TextValidator
-                name="email"
-                className="width"
-                label="Email"
-                disabled={this.state.disableForm}
-                value={this.state.email}
-                onChange={this.handleChange('email')}
-                validators={['required', 'isEmail']}
-                errorMessages={['This field is required', 'Email is not valid']}
-                required
-              />
-              <div className="paddingInput">
-                <FormControl className="width">
-                  <Select
-                    value={this.state.roleId}
-                    onChange={this.handleChange("roleId")}
-                    displayEmpty
-                    disabled={this.state.disableForm}
-                  >
-                    <MenuItem value="" disabled>
-                      Roles
+            <div className="paddingInput">
+              <ValidatorForm
+                ref="form"
+                className="form-add-user"
+                onSubmit={this.addUser}
+                onError={errors => console.log(errors)}
+              >
+                <TextValidator
+                  name="lastName"
+                  className="width"
+                  label="Last name"
+                  disabled={this.state.disableForm}
+                  value={this.state.lastName}
+                  onChange={this.handleChange('lastName')}
+                  validators={['required']}
+                  errorMessages={['This field is required']}
+                  required
+                />
+                <TextValidator
+                  name="firstName"
+                  className="width"
+                  label="First name"
+                  disabled={this.state.disableForm}
+                  value={this.state.firstName}
+                  onChange={this.handleChange('firstName')}
+                  validators={['required']}
+                  errorMessages={['This field is required']}
+                  required
+                />
+                <TextValidator
+                  name="email"
+                  className="width"
+                  label="Email"
+                  disabled={this.state.disableForm}
+                  value={this.state.email}
+                  onChange={this.handleChange('email')}
+                  validators={['required', 'isEmail']}
+                  errorMessages={['This field is required', 'Email is not valid']}
+                  required
+                />
+                <div className="paddingInput">
+                  <FormControl className="width">
+                    <Select
+                      value={this.state.roleId}
+                      onChange={this.handleChange("roleId")}
+                      displayEmpty
+                      disabled={this.state.disableForm}
+                    >
+                      <MenuItem value="" disabled>
+                        Roles
                     </MenuItem>
-                    {this.roles.map(item => (
-                      <MenuItem value={item.id} key={item.id}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-            
-              <input color="primary"
-                className={`buttonAddUser${this.disableSubmit() ? ' disabled' : ''}`}
-                disabled={this.disableSubmit() || this.state.disableForm}
-                type="submit"
-                value="Add user"
-              />
-            </ValidatorForm>
+                      {this.roles.map(item => (
+                        <MenuItem value={item.id} key={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="addAnother"
+                        type="checkbox"
+                        disabled={this.state.disableForm}
+                        onChange={() => this.updateAddAnother()}
+                        checked={this.state.addAnother}
+                        color="primary" />
+                    }
+                    label="Add another user"
+                  />
+                  <input color="primary"
+                    className={`buttonAddUser${this.disableSubmit() ? ' disabled' : ''}`}
+                    disabled={this.disableSubmit() || this.state.disableForm}
+                    type="submit"
+                    value="Add user"
+                  />
+                </div>
+              </ValidatorForm>
             </div>
           </div>
         </React.Fragment>

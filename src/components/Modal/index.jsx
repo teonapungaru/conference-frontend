@@ -57,7 +57,7 @@ class AddUserModal extends React.Component {
           onClose={this.handleClose}
         >
           <div style={getModalStyle()} className={classes.paper}>
-            <AddUser />
+            <AddUser  closeModal={this.handleClose}/>
             {/* <SimpleModalWrapped /> */}
           </div>
         </Modal>
