@@ -28,35 +28,36 @@ class ImgMediaCard extends React.Component {
   }
 
   clickedCard = () => {
-    sessionStorage.setItem('clickedCard', true);
-    this.props.history.push('/home');
+    //sessionStorage.setItem('clickedCard', true);
+    this.props.history.push('/addConf');
   }
 
   render() {
     const { classes } = this.props;
+    console.log(this.props.data)
 
     return (
-      <div className="container">
+      //<div className="card-container">
         <Card className={classes.card}>
           <CardActionArea onClick={this.clickedCard}>
             <div className="card">
               <div className="card-img">
-              <img className='card-image' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_J9Zwnx1awpQAmUDV3iSKtBETKRujdYMnhvEm8xIRbf3DKnkD&s'/>
+              {this.props.data.img && <img className='card-image' src={this.props.data.img} />}
               </div>
               <div className="card-content">
                 <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Conferinta 1
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">
-                    Detalii conferinta etc
-                  </Typography>
+                  {this.props.data.name && <Typography gutterBottom variant="h5" component="h2">
+                    {this.props.data.name}
+                  </Typography>}
+                  {this.props.data.details && <Typography variant="body2" color="textSecondary" component="p">
+                    {this.props.data.details}
+                  </Typography>}
                 </CardContent>
               </div>
             </div>
           </CardActionArea>
         </Card>
-      </div>
+     // </div>
     );
   }
 }

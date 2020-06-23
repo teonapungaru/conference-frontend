@@ -38,7 +38,7 @@ class ButtonAppBar extends React.Component {
       <div className={classes.root}>
       <AppBar position="static">
         <Toolbar className={classes.grow}>
-          <Button color="inherit" className={classes.button} onClick={()=>{this.props.history.push('/login')}}>Create new conference</Button>
+          <Button color="inherit" className={classes.button} onClick={()=>{this.props.history.push('/login')}}>Logout</Button>
         </Toolbar>
       </AppBar>
     </div>
