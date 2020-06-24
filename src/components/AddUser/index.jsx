@@ -6,6 +6,9 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Checkbox, FormControlLabel, TextField, Select, FormControl, MenuItem } from '@material-ui/core';
 import { Snackbars, SNACKBAR_TYPE } from '../Snackbar';
 import SearchBar from '../SearchBar'
+import Input from '@material-ui/core/Input';
+import ListItemText from '@material-ui/core/ListItemText';
+import InputLabel from '@material-ui/core/InputLabel';
 
 import makeRequest from '../../service/dataservice';
 
@@ -42,8 +45,8 @@ class AddUser extends Component {
       firstName: '',
       email: '',
       disableForm: false,
-      //role: this.roles[0].name,
-      roleId: this.roles[0].id,
+      roles: [],
+      roleId: [],
       addAnother: false
     }
 
@@ -96,7 +99,6 @@ class AddUser extends Component {
         email: '',
         roleId: this.roles[0].id
       })
-      //this.refs.form.reset()
     } else {
       this.props.closeModal();
     }
@@ -106,6 +108,7 @@ class AddUser extends Component {
   }
 
   render() {
+    console.log(this.state);
     return (
       <MuiThemeProvider theme={colorScheme}>
         <React.Fragment>
@@ -156,17 +159,19 @@ class AddUser extends Component {
                 />
                 <div className="paddingInput">
                   <FormControl className="width">
+                    <InputLabel htmlFor="select-multiple">Roles</InputLabel>
                     <Select
+                      multiple
                       value={this.state.roleId}
                       onChange={this.handleChange("roleId")}
+                      input={<Input id="select-multiple" />}
+                      // MenuProps={MenuProps}
+                      renderValue={selected => Array.prototype.join.call(selected, ', ')}
                       displayEmpty
                       disabled={this.state.disableForm}
                     >
-                      <MenuItem value="" disabled>
-                        Roles
-                    </MenuItem>
                       {this.roles.map(item => (
-                        <MenuItem value={item.id} key={item.id}>
+                        <MenuItem value={item.name} key={item.id}>
                           {item.name}
                         </MenuItem>
                       ))}
