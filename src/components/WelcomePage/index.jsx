@@ -6,10 +6,6 @@ import './WelcomePage.sass'
 
 const mockData = [
     {
-        name: 'Add participants',
-        img: 'https://cdn.nohat.cc/thumb/f/720/comvecteezy450402.jpg'
-    },
-    {
         name: 'Add new conference',
         img: 'https://cdn.nohat.cc/thumb/f/720/comvecteezy450402.jpg'
     },

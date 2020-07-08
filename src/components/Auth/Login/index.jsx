@@ -25,6 +25,7 @@ class Login extends Component {
     const concatCred = `${this.state.email}:${this.state.password}`;
     const credentials = btoa(concatCred);
 
+    console.log(credentials)
     try {
       const response = await makeRequest('signin', { credentials: { credentials } });
 

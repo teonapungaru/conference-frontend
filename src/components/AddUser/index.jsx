@@ -25,15 +25,15 @@ class AddUser extends Component {
   roles = [
     {
       id: 1,
-      name: 'Participant'
+      name: 'Administrator'
     },
     {
       id: 2,
-      name: 'Admin'
+      name: 'Program Committee'
     },
     {
       id: 3,
-      name: 'Speaker'
+      name: 'User'
     }
   ]
 
@@ -97,7 +97,7 @@ class AddUser extends Component {
         lastName: '',
         firstName: '',
         email: '',
-        roleId: this.roles[0].id
+        roleId: []
       })
     } else {
       this.props.closeModal();

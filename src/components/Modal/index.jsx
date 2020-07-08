@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import AddUser from '../AddUser'
+import EventCard from '../EventCard';
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -31,7 +32,7 @@ const styles = theme => ({
   },
 });
 
-class AddUserModal extends React.Component {
+class ModalComponent extends React.Component {
   state = {
     open: true,
   };
@@ -57,7 +58,7 @@ class AddUserModal extends React.Component {
           onClose={this.handleClose}
         >
           <div style={getModalStyle()} className={classes.paper}>
-            <AddUser  closeModal={this.handleClose}/>
+            {this.props.user ? <AddUser  closeModal={this.handleClose}/> : <EventCard />}
             {/* <SimpleModalWrapped /> */}
           </div>
         </Modal>
@@ -66,11 +67,11 @@ class AddUserModal extends React.Component {
   }
 }
 
-AddUserModal.propTypes = {
+ModalComponent.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 // We need an intermediary variable for handling the recursive nesting.
-const AddUserModalWrapped = withStyles(styles)(AddUserModal);
+const ModalWrapped = withStyles(styles)(ModalComponent);
 
-export default AddUserModalWrapped;
+export default ModalWrapped;

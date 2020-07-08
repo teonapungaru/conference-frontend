@@ -12,8 +12,9 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Checkbox, FormControlLabel, TextField, Select, FormControl, MenuItem } from '@material-ui/core';
 import { Snackbars, SNACKBAR_TYPE } from '../Snackbar';
-import AddUserModalWrapped from '../Modal'
+import ModalWrapped from '../Modal'
 import Button from '@material-ui/core/Button';
+import Participants from '../Participants'
 
 import makeRequest from '../../service/dataservice';
 
@@ -39,7 +40,7 @@ class AddConference extends Component {
             uploadText: 'Upload file',
             showUploadText: false,
             logoImage: localStorage.getItem('logoImage') || logo,
-            
+
         }
     }
 
@@ -65,6 +66,12 @@ class AddConference extends Component {
         });
     };
 
+    handleDayChange = prop => value => {
+        this.setState({ [prop]: value });
+    };
+
+    disableSubmit = () => !(this.state.conferenceName) ? true : false
+
     handleOpenModal = () => {
         console.log('bla')
         this.setState({ openModal: true })
@@ -73,12 +80,6 @@ class AddConference extends Component {
     handleModalClose = () => {
         this.setState({ openModal: false })
     }
-
-    handleDayChange = prop => value => {
-        this.setState({ [prop]: value });
-    };
-
-    disableSubmit = () => !(this.state.conferenceName) ? true : false
 
     render() {
         console.log(this.state.openModal)
@@ -169,7 +170,11 @@ class AddConference extends Component {
                                 />
                             </div>
 
-                            <Button onClick={this.handleOpenModal}>Add participants</Button>
+                            <p className="textAddConference">Participants</p>
+                            <Participants />
+
+                            <p className="textAddConference">Events</p>
+                            <Button onClick={this.handleOpenModal}>Add event</Button>
 
                             <input color="primary"
                                 className={`buttonAddConference${this.disableSubmit() ? ' disabled' : ''}`}
@@ -180,9 +185,10 @@ class AddConference extends Component {
                         </ValidatorForm>
                     </div>
                 </React.Fragment>
-                {this.state.openModal && <AddUserModalWrapped 
-                onClose={this.handleModalClose}
-                open={this.state.openModal}
+                {this.state.openModal && <ModalWrapped
+                    user={false}
+                    onClose={this.handleModalClose}
+                    open={this.state.openModal}
                 />}
             </MuiThemeProvider>
         )
