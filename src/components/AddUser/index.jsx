@@ -37,6 +37,21 @@ class AddUser extends Component {
     }
   ]
 
+  educationalTitles = [
+    {
+      id: 1,
+      name: 'Licentiar??'
+    },
+    {
+      id: 2,
+      name: '???'
+    },
+    {
+      id: 3,
+      name: '???'
+    }
+  ]
+
   constructor(props) {
     super(props);
 
@@ -47,7 +62,9 @@ class AddUser extends Component {
       disableForm: false,
       roles: [],
       roleId: [],
-      addAnother: false
+      addAnother: false,
+      isPhd: false,
+      eduTitle: ''
     }
 
     this.initialState = this.state;
@@ -67,10 +84,31 @@ class AddUser extends Component {
     this.setState({ addAnother: !this.state.addAnother });
   }
 
-  disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email && this.state.roleId) ? true : false
+  updateisPhd() {
+    this.setState({ isPhd: !this.state.isPhd })
+  }
 
-  addUser = () => {
-    //this.setState({ disableForm: true });
+  disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email) ? true : false
+
+  addUser = (event) => {
+    event.preventDefault();
+    let roleArray = [];
+    let ceva = this.state.roles.map(item => roleArray.push(item.id))
+    console.log(ceva, 'ceva')
+    this.setState({ disableForm: true });
+    let data = {
+      username: this.state.email,
+      password: btoa('12345678'),
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      roles: ceva,
+      conferenceId: this.props.conferenceId,
+      validAccount: 1,
+      isPhd: this.state.isPhd,
+      educationalTitle: this.state.eduTitle
+    }
+
+    console.log(data, 'data')
     // try {
     //   const response = await makeRequest('addUser', {
     //     data: {}
@@ -91,13 +129,15 @@ class AddUser extends Component {
     //   });
     // }
 
-    console.log(this.state.addAnother, 'add')
+    //console.log(this.state.addAnother, 'add')
     if (this.state.addAnother) {
       this.setState({
         lastName: '',
         firstName: '',
         email: '',
-        roleId: []
+        roles: [],
+        isPhd: false,
+        eduTitle: ''
       })
     } else {
       this.props.closeModal();
@@ -117,13 +157,14 @@ class AddUser extends Component {
             <div className="search">
               <SearchBar />
             </div>
-            <div className="paddingInput">
+            {/* <div className="paddingInput"> */}
               <ValidatorForm
                 ref="form"
                 className="form-add-user"
                 onSubmit={this.addUser}
                 onError={errors => console.log(errors)}
               >
+                <div className="paddingInput">
                 <TextValidator
                   name="lastName"
                   className="width"
@@ -135,6 +176,8 @@ class AddUser extends Component {
                   errorMessages={['This field is required']}
                   required
                 />
+                </div>
+                <div className="paddingInput">
                 <TextValidator
                   name="firstName"
                   className="width"
@@ -146,6 +189,8 @@ class AddUser extends Component {
                   errorMessages={['This field is required']}
                   required
                 />
+                </div>
+                <div className="paddingInput">
                 <TextValidator
                   name="email"
                   className="width"
@@ -157,13 +202,46 @@ class AddUser extends Component {
                   errorMessages={['This field is required', 'Email is not valid']}
                   required
                 />
+                </div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="isPhd"
+                      type="checkbox"
+                      disabled={this.state.disableForm}
+                      onChange={() => this.updateisPhd()}
+                      checked={this.state.isPhd}
+                      color="primary" />
+                  }
+                  label="Is Phd"
+                />
+                {/* <div className="paddingInput"> */}
+                  <FormControl className="width">
+                    <InputLabel htmlFor="select-multiple">Educational Title</InputLabel>
+                    <Select
+                      value={this.state.eduTitle}
+                      onChange={this.handleChange("eduTitle")}
+                      //input={<Input id="select-multiple" />}
+                      // MenuProps={MenuProps}
+                      //renderValue={selected => Array.prototype.join.call(selected, ', ')}
+                      displayEmpty
+                      disabled={this.state.disableForm}
+                    >
+                      {this.educationalTitles.map(item => (
+                        <MenuItem value={item.name} key={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                {/* </div> */}
                 <div className="paddingInput">
                   <FormControl className="width">
                     <InputLabel htmlFor="select-multiple">Roles</InputLabel>
                     <Select
                       multiple
-                      value={this.state.roleId}
-                      onChange={this.handleChange("roleId")}
+                      value={this.state.roles}
+                      onChange={this.handleChange("roles")}
                       input={<Input id="select-multiple" />}
                       // MenuProps={MenuProps}
                       renderValue={selected => Array.prototype.join.call(selected, ', ')}
@@ -199,7 +277,7 @@ class AddUser extends Component {
                   />
                 </div>
               </ValidatorForm>
-            </div>
+            {/* </div> */}
           </div>
         </React.Fragment>
         <Snackbars

@@ -32,6 +32,7 @@ class AddConference extends Component {
         super(props);
 
         this.state = {
+            conferenceId: '',
             conferenceName: '',
             startDate: '',
             endDate: '',
@@ -79,6 +80,10 @@ class AddConference extends Component {
 
     handleModalClose = () => {
         this.setState({ openModal: false })
+    }
+
+    addConference = () => {
+        console.log(this.state)
     }
 
     render() {
