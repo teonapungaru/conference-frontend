@@ -16,6 +16,11 @@ import ModalWrapped from '../Modal'
 import Button from '@material-ui/core/Button';
 import Participants from '../Participants'
 
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Fab from '@material-ui/core/Fab';
+
 import makeRequest from '../../service/dataservice';
 
 import './addConference.sass';
@@ -23,6 +28,12 @@ import './addConference.sass';
 const colorScheme = createMuiTheme({
     palette: {
         primary: { main: 'rgb(31,75,107)' }
+    },
+    margin: {
+        margin: 1,
+    },
+    extendedIcon: {
+        marginRight: 2,
     },
 });
 
@@ -32,7 +43,6 @@ class AddConference extends Component {
         super(props);
 
         this.state = {
-            conferenceId: '',
             conferenceName: '',
             startDate: '',
             endDate: '',
@@ -41,6 +51,8 @@ class AddConference extends Component {
             uploadText: 'Upload file',
             showUploadText: false,
             logoImage: localStorage.getItem('logoImage') || logo,
+            nextClicked: false,
+            prevClicked: false
 
         }
     }
@@ -86,116 +98,161 @@ class AddConference extends Component {
         console.log(this.state)
     }
 
+    nextPage = () => {
+        this.setState({
+            nextClicked: true,
+            prevClicked: false
+        })
+    }
+    prevPage = () => {
+        this.setState({
+            nextClicked: false,
+            prevClicked: true
+        })
+    }
+
     render() {
-        console.log(this.state.openModal)
+        console.log(this.state.nextClicked)
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <React.Fragment>
-                    <p className="textAddConference">Add New Conference</p>
-                    <div className="add-conference-container">
-                        <div className="dropzone-parent">
-                            <Dropzone
-                                className="dropzone"
-                                accept="image/jpeg, image/png"
-                                multiple={false}
-                                onDrop={this.onDrop.bind(this)}
-                                onFileDialogCancel={this.onCancel.bind(this)}
-                            >
-                                <div className="logo">
-                                    <p>Logo</p>
-                                    <img src={this.state.logoImage} width="150" height="150" alt="Logo" />
-                                    <span className={this.state.showUploadText ? "show" : ""}>{this.state.uploadText}</span>
+                    {!this.state.nextClicked &&
+                        <div>
+                            <p className="textAddConference">Add New Conference</p>
+                            <div className="add-conference-container">
+                                <div className="dropzone-parent">
+                                    <Dropzone
+                                        className="dropzone"
+                                        accept="image/jpeg, image/png"
+                                        multiple={false}
+                                        onDrop={this.onDrop.bind(this)}
+                                        onFileDialogCancel={this.onCancel.bind(this)}
+                                    >
+                                        <div className="logo">
+                                            <p>Logo</p>
+                                            <img src={this.state.logoImage} width="150" height="150" alt="Logo" />
+                                            <span className={this.state.showUploadText ? "show" : ""}>{this.state.uploadText}</span>
+                                        </div>
+                                    </Dropzone>
+                                    <Dropzone
+                                        className="dropzone"
+                                        accept=".txt, .doc"
+                                        multiple={false}
+                                        onDrop={this.onDrop.bind(this)}
+                                        onFileDialogCancel={this.onCancel.bind(this)}
+                                    >
+                                        <div className="logo">
+                                            <p>Description</p>
+                                            <img src={fileImg} width="150" height="150" alt="File" />
+                                            <span className={this.state.showUploadText ? "show" : ""}>{this.state.uploadText}</span>
+                                        </div>
+                                    </Dropzone>
                                 </div>
-                            </Dropzone>
-                            <Dropzone
-                                className="dropzone"
-                                accept=".txt, .doc"
-                                multiple={false}
-                                onDrop={this.onDrop.bind(this)}
-                                onFileDialogCancel={this.onCancel.bind(this)}
-                            >
-                                <div className="logo">
-                                    <p>Description</p>
-                                    <img src={fileImg} width="150" height="150" alt="File" />
-                                    <span className={this.state.showUploadText ? "show" : ""}>{this.state.uploadText}</span>
-                                </div>
-                            </Dropzone>
-                        </div>
-                        <ValidatorForm
-                            ref="form"
-                            className="form-add-conference"
-                            onSubmit={this.addConference}
-                            onError={errors => console.log(errors)}
-                        >
-                            <TextValidator
-                                name="conferenceName"
-                                className="width"
-                                label="Conference Name"
-                                disabled={this.state.disableForm}
-                                value={this.state.conferenceName}
-                                onChange={this.handleChange('conferenceName')}
-                                validators={['required']}
-                                errorMessages={['This field is required']}
-                                required
-                            />
-                            <TextValidator
-                                name="location"
-                                className="width"
-                                label="Location"
-                                disabled={this.state.disableForm}
-                                value={this.state.location}
-                                onChange={this.handleChange('location')}
-                                validators={['required']}
-                                errorMessages={['This field is required']}
-                                required
-                            />
-                            <TextValidator
-                                name="country"
-                                className="width"
-                                label="Country"
-                                disabled={this.state.disableForm}
-                                value={this.state.country}
-                                onChange={this.handleChange('country')}
-                                validators={['required']}
-                                errorMessages={['This field is required']}
-                                required
-                            />
-                            <div className="day-picker">
-                                <DayPickerInput
-                                    value={this.state.startDate}
-                                    onDayChange={this.handleDayChange('startDate')}
-                                    placeholder="Start Date"
-                                    required
-                                />
-                                <DayPickerInput
-                                    value={this.state.endDate}
-                                    onDayChange={this.handleDayChange('endDate')}
-                                    placeholder="End Date"
-                                    required
-                                />
+                                <ValidatorForm
+                                    ref="form"
+                                    className="form-add-conference"
+                                    onSubmit={this.addConference}
+                                    onError={errors => console.log(errors)}
+                                >
+                                    <TextValidator
+                                        name="conferenceName"
+                                        className="width"
+                                        label="Conference Name"
+                                        disabled={this.state.disableForm}
+                                        value={this.state.conferenceName}
+                                        onChange={this.handleChange('conferenceName')}
+                                        validators={['required']}
+                                        errorMessages={['This field is required']}
+                                        required
+                                    />
+                                    <TextValidator
+                                        name="location"
+                                        className="width"
+                                        label="Location"
+                                        disabled={this.state.disableForm}
+                                        value={this.state.location}
+                                        onChange={this.handleChange('location')}
+                                        validators={['required']}
+                                        errorMessages={['This field is required']}
+                                        required
+                                    />
+                                    <TextValidator
+                                        name="country"
+                                        className="width"
+                                        label="Country"
+                                        disabled={this.state.disableForm}
+                                        value={this.state.country}
+                                        onChange={this.handleChange('country')}
+                                        validators={['required']}
+                                        errorMessages={['This field is required']}
+                                        required
+                                    />
+                                    <div className="day-picker">
+                                        <DayPickerInput
+                                            value={this.state.startDate}
+                                            onDayChange={this.handleDayChange('startDate')}
+                                            placeholder="Start Date"
+                                            required
+                                        />
+                                        <DayPickerInput
+                                            value={this.state.endDate}
+                                            onDayChange={this.handleDayChange('endDate')}
+                                            placeholder="End Date"
+                                            required
+                                        />
+                                    </div>
+                                </ValidatorForm>
                             </div>
+                        </div>}
 
-                            <p className="textAddConference">Participants</p>
-                            <Participants />
+                    {
+                        this.state.nextClicked && <div className="add-conference-container">
+                            <div className='participants'>
+                                <p className="textAddConference">Participants</p>
+                                <Participants />
 
-                            <p className="textAddConference">Events</p>
-                            <Button onClick={this.handleOpenModal}>Add event</Button>
-
-                            <input color="primary"
-                                className={`buttonAddConference${this.disableSubmit() ? ' disabled' : ''}`}
-                                //disabled={this.disableSubmit() || this.state.disableForm}
-                                type="submit"
-                                value="Add Conference"
-                            />
-                        </ValidatorForm>
+                                <p className="textAddConference">Events</p>
+                                <Button onClick={this.handleOpenModal}>Add event</Button>
+                            </div>
+                        </div>
+                    }
+                    <div className="add-conference-container">
+                        <div className='buttons' >
+                            <div className='prev-div'>
+                                {this.state.nextClicked && <Fab variant="extended" color="primary" aria-label="Next" className='fab' onClick={() => this.prevPage()} disabled={this.disableSubmit()} >
+                                    <ArrowBackIcon className='next' />
+                                            Back
+                                    </Fab>}
+                            </div>
+                            <div className='next-div'>
+                                {!this.state.nextClicked && <Fab variant="extended" color="primary" aria-label="Next" className='fab' onClick={() => this.nextPage()} disabled={this.disableSubmit()} >
+                                    <ArrowForwardIcon className='next' />
+                                            Next
+                                    </Fab>}
+                            </div>
+                        </div>
                     </div>
-                </React.Fragment>
-                {this.state.openModal && <ModalWrapped
-                    user={false}
-                    onClose={this.handleModalClose}
-                    open={this.state.openModal}
-                />}
-            </MuiThemeProvider>
+                    <div className="add-conference-container">
+                        <div className='participants'>
+                            {
+                                this.state.nextClicked && <input color="primary"
+                                    className={`buttonAddConference${this.disableSubmit() ? ' disabled' : ''}`}
+                                    //disabled={this.disableSubmit() || this.state.disableForm}
+                                    //type="submit"
+                                    value="Add Conference"
+                                />
+                            }
+                        </div>
+                    </div>
+                </React.Fragment >
+                {
+                    this.state.openModal && <ModalWrapped
+                        user={false}
+                        onClose={this.handleModalClose}
+                        open={this.state.openModal}
+                    />
+                }
+            </MuiThemeProvider >
         )
     }
 }
