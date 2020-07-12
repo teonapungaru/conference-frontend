@@ -124,7 +124,7 @@ const styles = theme => ({
     },
     buttons: {
         display: 'flex',
-        flexDirection: 'row'
+        // flexDirection: 'row'
     }
 });
 
@@ -137,6 +137,42 @@ const details = [
         lastName: 'blaaaaaaaaaaa',
         email: 'xxxxxxxxxx',
         role: 'yyyyyyyyyy'
+    },
+    {
+        firstName: 'blaaaaaaaaa',
+        lastName: 'blaaaaaaaaaaa',
+        email: 'xxxxxxxxxx',
+        role: 'yyyyyyyyyy'
+    },
+    {
+        firstName: 'blaaaaaaaaa',
+        lastName: 'blaaaaaaaaaaa',
+        email: 'xxxxxxxxxx',
+        role: 'yyyyyyyyyy'
+    },
+    {
+        firstName: 'blaaaaaaaaa',
+        lastName: 'blaaaaaaaaaaa',
+        email: 'xxxxxxxxxx',
+        role: 'yyyyyyyyyy'
+    },
+    {
+        firstName: 'blaaaaaaaaa',
+        lastName: 'blaaaaaaaaaaa',
+        email: 'xxxxxxxxxx',
+        role: 'yyyyyyyyyy'
+    },
+    {
+        firstName: 'blaaaaaaaaa',
+        lastName: 'blaaaaaaaaaaa',
+        email: 'xxxxxxxxxx',
+        role: 'yyyyyyyyyy'
+    },
+    {
+        firstName: 'blaaaaaaaaa',
+        lastName: 'blaaaaaaaaaaa',
+        email: 'xxxxxxxxxx',
+        role: 'yyyyyyyyyy'
     }
 ]
 
@@ -144,7 +180,10 @@ class SimpleTable extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            page: 0,
+            rowsPerPage: 5
+        };
     }
 
     openDialog = () => {
@@ -208,7 +247,17 @@ class SimpleTable extends React.Component {
         window.location.reload();
     }
 
+    handleChangePage = (event, page) => {
+        this.setState({ page });
+    };
+
+    handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: event.target.value });
+    };
+
     render() {
+        const { rowsPerPage, page } = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, details.length - page * rowsPerPage);
         return (
             <div>
                 <Paper className={this.props.classes.root}>
@@ -226,7 +275,7 @@ class SimpleTable extends React.Component {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {details.map((row, key) => (
+                            {details.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, key) => (
                                 <TableRow key={key}>
                                     <TableCell component="th" scope="row">
                                         {row.role}
@@ -247,24 +296,29 @@ class SimpleTable extends React.Component {
                                     </TableCell>
                                 </TableRow>
                             ))}
-                            <TableFooter>
-                                <TableRow>
-                                    <TablePagination
-                                        rowsPerPageOptions={[5, 10, 25]}
-                                        colSpan={3}
-                                        count={details.length}
-                                        rowsPerPage={5}
-                                        page={0}
-                                        SelectProps={{
-                                            native: true,
-                                        }}
-                                        onChangePage={this.handleChangePage}
-                                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                        ActionsComponent={TablePaginationActionsWrapped}
-                                    />
+                            {emptyRows > 0 && (
+                                <TableRow style={{ height: 48 * emptyRows }}>
+                                    <TableCell colSpan={6} />
                                 </TableRow>
-                            </TableFooter>
+                            )}
                         </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 25]}
+                                    colSpan={3}
+                                    count={details.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                    onChangePage={this.handleChangePage}
+                                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActionsWrapped}
+                                />
+                            </TableRow>
+                        </TableFooter>
                     </Table>
                 </Paper>
                 {/* <FormDialog

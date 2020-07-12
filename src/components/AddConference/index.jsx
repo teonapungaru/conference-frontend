@@ -20,10 +20,12 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import makeRequest from '../../service/dataservice';
 
 import './addConference.sass';
+import EventCard from '../EventCard';
 
 const colorScheme = createMuiTheme({
     palette: {
@@ -36,6 +38,45 @@ const colorScheme = createMuiTheme({
         marginRight: 2,
     },
 });
+
+const info = [
+    {
+        eventDays: ['01.01.2020'],
+        totalParticipants: 5,
+        participants: 5,
+        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut a fringilla risus. Sed placerat vitae neque a dignissim. Donec nisi lorem, sodales egestas varius eget, convallis aliquam neque. Duis consequat, ipsum at imperdiet blandit, ligula ligula commodo dolor, eget posuere risus risus in massa. Aliquam rhoncus est et massa auctor, in mollis nunc aliquet. Praesent sapien libero, sollicitudin et porta vitae, fermentum sollicitudin ante. Fusce quis turpis interdum, cursus est non, auctor nulla. Phasellus vel maximus est. Donec augue elit, fermentum ac lectus sed, volutpat vulputate enim. Etiam finibus tristique leo non tempor. Praesent fringilla purus vel ante mattis, non auctor nulla varius.',
+        address: {
+            text: ['numele Cladirii/ locului etc (ex Palas)',
+                'line info aditionale',
+                'Strada, Nr. XXXX',
+                'Cod, Oras']
+        },
+        times: [
+            {
+                event: 'Event 1',
+                hours: ['00:00', '06:00']
+            }
+        ]
+    },
+    {
+        eventDays: ['01.01.2020'],
+        totalParticipants: 5,
+        participants: 5,
+        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut a fringilla risus. Sed placerat vitae neque a dignissim. Donec nisi lorem, sodales egestas varius eget, convallis aliquam neque. Duis consequat, ipsum at imperdiet blandit, ligula ligula commodo dolor, eget posuere risus risus in massa. Aliquam rhoncus est et massa auctor, in mollis nunc aliquet. Praesent sapien libero, sollicitudin et porta vitae, fermentum sollicitudin ante. Fusce quis turpis interdum, cursus est non, auctor nulla. Phasellus vel maximus est. Donec augue elit, fermentum ac lectus sed, volutpat vulputate enim. Etiam finibus tristique leo non tempor. Praesent fringilla purus vel ante mattis, non auctor nulla varius.',
+        address: {
+            text: ['numele Cladirii/ locului etc (ex Palas)',
+                'line info aditionale',
+                'Strada, Nr. XXXX',
+                'Cod, Oras']
+        },
+        times: [
+            {
+                event: 'Event 1',
+                hours: ['00:00', '06:00']
+            }
+        ]
+    }
+]
 
 class AddConference extends Component {
 
@@ -56,6 +97,7 @@ class AddConference extends Component {
 
         }
     }
+    conference = 'hjhbjkhb'
 
     onDrop(files) {
         this.setState({ uploadText: 'Uploading', showUploadText: true })
@@ -103,6 +145,7 @@ class AddConference extends Component {
             nextClicked: true,
             prevClicked: false
         })
+        console.log(this.state)
     }
     prevPage = () => {
         this.setState({
@@ -112,7 +155,7 @@ class AddConference extends Component {
     }
 
     render() {
-        console.log(this.state.nextClicked)
+        console.log(this.state)
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <React.Fragment>
@@ -205,17 +248,24 @@ class AddConference extends Component {
                             </div>
                         </div>}
 
-                    {
-                        this.state.nextClicked && <div className="add-conference-container">
-                            <div className='participants'>
-                                <p className="textAddConference">Participants</p>
-                                <Participants />
+                    {this.state.nextClicked && this.state.conferenceName && <div className="add-conference-container">
+                        <div className='participants'>
+                            <p className="textAddConference">Participants</p>
+                            <Participants conferenceName={this.conference} />
 
-                                <p className="textAddConference">Events</p>
-                                <Button onClick={this.handleOpenModal}>Add event</Button>
+                            <p className="textAddConference">Events</p>
+                            {/* <Button onClick={this.handleOpenModal}>Add event</Button> */}
+                            <Fab size="small" color="primary" aria-label="Add" className='margin' onClick={this.handleOpenModal}>
+                                <AddIcon />
+                            </Fab>
+                            <div className='events'>
+                                {info.map(data =>
+                                    <EventCard data={data} />
+                                )}
                             </div>
+
                         </div>
-                    }
+                    </div>}
                     <div className="add-conference-container">
                         <div className='buttons' >
                             <div className='prev-div'>
@@ -238,7 +288,7 @@ class AddConference extends Component {
                                 this.state.nextClicked && <input color="primary"
                                     className={`buttonAddConference${this.disableSubmit() ? ' disabled' : ''}`}
                                     //disabled={this.disableSubmit() || this.state.disableForm}
-                                    //type="submit"
+                                    type="submit"
                                     value="Add Conference"
                                 />
                             }

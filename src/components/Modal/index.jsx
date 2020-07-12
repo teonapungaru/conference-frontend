@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import AddUser from '../AddUser'
 import EventCard from '../EventCard';
+import AddEvent from '../AddEvent';
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -58,7 +59,7 @@ class ModalComponent extends React.Component {
           onClose={this.handleClose}
         >
           <div style={getModalStyle()} className={classes.paper}>
-            {this.props.user ? <AddUser  closeModal={this.handleClose}/> : <EventCard />}
+            {this.props.user ? <AddUser  closeModal={this.handleClose}/> : <AddEvent />}
             {/* <SimpleModalWrapped /> */}
           </div>
         </Modal>

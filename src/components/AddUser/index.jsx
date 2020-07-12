@@ -90,8 +90,9 @@ class AddUser extends Component {
 
   disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email) ? true : false
 
-  addUser = (event) => {
-    event.preventDefault();
+  addUser = () => {
+    //event.preventDefault();
+    console.log(this.props.conferenceName)
     let roleArray = [];
     let ceva = this.state.roles.map(item => roleArray.push(item.id))
     console.log(ceva, 'ceva')
@@ -102,7 +103,7 @@ class AddUser extends Component {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       roles: ceva,
-      conferenceId: this.props.conferenceId,
+      conferenceName: this.props.conferenceName,
       validAccount: 1,
       isPhd: this.state.isPhd,
       educationalTitle: this.state.eduTitle
@@ -217,7 +218,7 @@ class AddUser extends Component {
                 />
                 {/* <div className="paddingInput"> */}
                   <FormControl className="width">
-                    <InputLabel htmlFor="select-multiple">Educational Title</InputLabel>
+                    <InputLabel >Educational Title</InputLabel>
                     <Select
                       value={this.state.eduTitle}
                       onChange={this.handleChange("eduTitle")}

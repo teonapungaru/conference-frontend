@@ -9,10 +9,12 @@ import SearchBar from '../SearchBar'
 import Input from '@material-ui/core/Input';
 import ListItemText from '@material-ui/core/ListItemText';
 import InputLabel from '@material-ui/core/InputLabel';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import 'react-day-picker/lib/style.css';
 
 import makeRequest from '../../service/dataservice';
 
-import './addUser.sass';
+import './addEvent.sass';
 
 const colorScheme = createMuiTheme({
     palette: {
@@ -22,7 +24,7 @@ const colorScheme = createMuiTheme({
 
 class AddUser extends Component {
 
-    roles = [
+    eventTypes = [
         {
             id: -1,
             name: 'Social'
@@ -41,12 +43,12 @@ class AddUser extends Component {
         super(props);
 
         this.state = {
-            lastName: '',
-            firstName: '',
-            email: '',
+            eventId: '',
+            eventName: '',
+            location: '',
             disableForm: false,
-            roles: [],
-            roleId: [],
+            chair: '',
+            coChair: '',
             addAnother: false
         }
 
@@ -67,9 +69,13 @@ class AddUser extends Component {
         this.setState({ addAnother: !this.state.addAnother });
     }
 
-    disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email && this.state.roleId) ? true : false
+    handleDayChange = prop => value => {
+        this.setState({ [prop]: value });
+    };
 
-    addUser = () => {
+    disableSubmit = () => !(this.state.eventId && this.state.eventName && this.state.location && this.state.chair && this.state.coChair) ? true : false
+
+    addEvent = () => {
         //this.setState({ disableForm: true });
         // try {
         //   const response = await makeRequest('addUser', {
@@ -94,10 +100,11 @@ class AddUser extends Component {
         console.log(this.state.addAnother, 'add')
         if (this.state.addAnother) {
             this.setState({
-                lastName: '',
-                firstName: '',
-                email: '',
-                roleId: []
+                eventId: '',
+                eventName: '',
+                location: '',
+                chair: '',
+                coChair: ''
             })
         } else {
             this.props.closeModal();
@@ -108,7 +115,7 @@ class AddUser extends Component {
     }
 
     render() {
-        console.log(this.state);
+        console.log(this.state.eventId);
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <React.Fragment>
@@ -124,18 +131,15 @@ class AddUser extends Component {
 
                                 <div className="paddingInput">
                                     <FormControl className="width">
-                                        <InputLabel htmlFor="select-multiple">Event Type</InputLabel>
+                                        <InputLabel >Event Type</InputLabel>
                                         <Select
                                             value={this.state.eventId}
                                             onChange={this.handleChange("eventId")}
-                                            input={<Input id="select-multiple" />}
-                                            // MenuProps={MenuProps}
-                                            renderValue={selected => Array.prototype.join.call(selected, ', ')}
                                             displayEmpty
                                             disabled={this.state.disableForm}
                                         >
                                             {this.eventTypes.map(item => (
-                                                <MenuItem value={item.name} key={item.id}>
+                                                <MenuItem value={item.id} key={item.id}>
                                                     {item.name}
                                                 </MenuItem>
                                             ))}
@@ -146,34 +150,94 @@ class AddUser extends Component {
                                 <TextValidator
                                     name="eventName"
                                     className="width"
-                                    label="Last name"
+                                    label="Event name"
                                     disabled={this.state.disableForm}
-                                    value={this.state.lastName}
-                                    onChange={this.handleChange('lastName')}
+                                    value={this.state.eventName}
+                                    onChange={this.handleChange('eventName')}
                                     validators={['required']}
                                     errorMessages={['This field is required']}
                                     required
                                 />
                                 <TextValidator
-                                    name="firstName"
+                                    name="location"
                                     className="width"
-                                    label="First name"
+                                    label="Location"
                                     disabled={this.state.disableForm}
-                                    value={this.state.firstName}
-                                    onChange={this.handleChange('firstName')}
+                                    value={this.state.location}
+                                    onChange={this.handleChange('location')}
                                     validators={['required']}
                                     errorMessages={['This field is required']}
                                     required
                                 />
                                 <TextValidator
-                                    name="email"
-                                    className="width"
-                                    label="Email"
+                                    name="description"
+                                    className="description"
+                                    label="Description"
                                     disabled={this.state.disableForm}
-                                    value={this.state.email}
-                                    onChange={this.handleChange('email')}
-                                    validators={['required', 'isEmail']}
-                                    errorMessages={['This field is required', 'Email is not valid']}
+                                    value={this.state.description}
+                                    onChange={this.handleChange('description')}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                    required
+                                    multiline
+                                />
+                                <div className="day-picker">
+                                    <DayPickerInput
+                                        value={this.state.startDate}
+                                        onDayChange={this.handleDayChange('startDate')}
+                                        placeholder="Start Date"
+                                        required
+                                    />
+                                    <DayPickerInput
+                                        value={this.state.endDate}
+                                        onDayChange={this.handleDayChange('endDate')}
+                                        placeholder="End Date"
+                                        required
+                                    />
+                                </div>
+                                {this.state.eventId === 2 && <TextValidator
+                                    name="plenarySpeakerName"
+                                    className="width"
+                                    label="Plenary Speaker Name"
+                                    disabled={this.state.disableForm}
+                                    value={this.state.plenarySpeakerName}
+                                    onChange={this.handleChange('plenarySpeakerName')}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                    required
+                                />}
+                                {this.state.eventId === 2 && <TextValidator
+                                    name="plenarySpeakerDescription"
+                                    className="description"
+                                    label="Plenary Speaker Description"
+                                    disabled={this.state.disableForm}
+                                    value={this.state.plenarySpeakerDescription}
+                                    onChange={this.handleChange('plenarySpeakerDescription')}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                    required
+                                    multiline
+                                />}
+                                <TextValidator
+                                    name="chair"
+                                    className="width"
+                                    label="Chair"
+                                    disabled={this.state.disableForm}
+                                    value={this.state.chair}
+                                    onChange={this.handleChange('chair')}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                    required
+                                />
+                                <TextValidator
+                                    name="coChair"
+                                    className="width"
+                                    label="Co-Chair"
+                                    disabled={this.state.disableForm}
+                                    value={this.state.coChair}
+                                    onChange={this.handleChange('coChair')}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
                                     required
                                 />
 
