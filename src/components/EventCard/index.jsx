@@ -6,6 +6,7 @@ import ScheduleIcon from '@material-ui/icons/Schedule';
 // import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -158,7 +159,13 @@ const styles = theme => ({
     },
     edit: {
         display: 'flex',
-        alignSelf: 'flex-end'
+        alignSelf: 'flex-end',
+        // flexDirection: 'column',
+        width: '80px',
+        /* padding-top: 50px; */
+        height: '80px',
+        justifyContent: 'space-between',
+        marginBottom: '-70px'
     }
 });
 
@@ -172,17 +179,17 @@ class EventCard extends React.Component {
             expanded: false
         }
 
-        this.handleTruncate = this.handleTruncate.bind(this);
-        this.toggleLines = this.toggleLines.bind(this);
+        // this.handleTruncate = this.handleTruncate.bind(this);
+        // this.toggleLines = this.toggleLines.bind(this);
     }
 
-    handleTruncate(truncated) {
+    handleTruncate = (truncated) => {
         if (this.state.truncated !== truncated) {
             this.setState({ truncated })
         }
     }
 
-    toggleLines(event) {
+    toggleLines = (event) => {
         event.preventDefault();
         this.setState({ expanded: !this.state.expanded })
     }
@@ -199,10 +206,13 @@ class EventCard extends React.Component {
             <div className={this.props.classes.root}>
                 <div className={this.props.classes.header}>
                     {eventDays.length > 1 ? `${eventDays[0]} - ${eventDays[1]}` : `${eventDays[0]}`}
-                    <div className={this.props.classes.edit} ><EditIcon /></div>
+                    <div className={this.props.classes.edit}>
+                        <div><EditIcon /></div>
+                        <div><DeleteIcon /></div>
+                    </div>
                 </div>
                 <div className={this.props.classes.title}>
-                    Titlu fumos la eveniment/sesiune/cum pnm ii zice
+                    Titlul evenimentului
                 </div>
                 <div className={this.props.classes.text}>
                     <Truncate

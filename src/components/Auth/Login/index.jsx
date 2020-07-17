@@ -4,6 +4,7 @@ import {withRouter} from "react-router-dom";
 import './login.sass';
 import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 import {Snackbars, SNACKBAR_TYPE} from '../../Snackbar';
+import ConferenceLogo from '../../../assets/Logo-ICSTCC-2020-main.svg'
 
 import makeRequest from '../../../service/dataservice'
 
@@ -20,17 +21,20 @@ class Login extends Component {
     this.setState({ [prop]: event.target.value });
   };
 
+  handleClose = () => {
+    this.setState({ openSnackbar: false });
+  }
+
   handleSubmit = async (event) => {
 
     const concatCred = `${this.state.email}:${this.state.password}`;
     const credentials = btoa(concatCred);
 
-    console.log(credentials)
     try {
-      const response = await makeRequest('signin', { credentials: { credentials } });
+      const response = await makeRequest('signin', { data: { credentials }});
 
-      localStorage.setItem('token', response.accessToken);
-      this.props.history.push('/home');
+      localStorage.setItem('token', response.access_token);
+      this.props.history.push('/');
     } catch (err) {
       this.setState({
         disableForm: false,
@@ -51,7 +55,7 @@ class Login extends Component {
 
   render() {
     const { email, password, disableForm } = this.state;
-    const re =/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/;
+    const re =/^\w.*\d*@\w+\.\w+$/;
     const disabledLogin = !(email.length && password.length && re.test(email));
     const imageSrc = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_J9Zwnx1awpQAmUDV3iSKtBETKRujdYMnhvEm8xIRbf3DKnkD&s';
     this.setToLocalStorage('imageSrc', imageSrc);
@@ -60,7 +64,7 @@ class Login extends Component {
       <div className="container-login">
         <div className="login-form">
           <div className="login-img">
-            <img className='login-image' src={this.getFromLocalStorage('imageSrc')}/>
+            <img className='login-image' src={ConferenceLogo}/>
           </div>
           <div className="login-inputs">
             <ValidatorForm
@@ -78,7 +82,7 @@ class Login extends Component {
                 value={email}
                 disabled={disableForm}
                 validators={['required', 'isEmail']}
-                errorMessages={['this field is required', 'Email is not valid']}
+                errorMessages={['this field is required', 'E-mail format is invalid ']}
                 required
               />
               <TextValidator
@@ -102,6 +106,11 @@ class Login extends Component {
             </ValidatorForm>
           </div>
         </div>
+        <Snackbars
+          message={this.state.snackbarMessage}
+          open={this.state.openSnackbar}
+          variant={this.state.snackbarVariant}
+          handleClose={this.handleClose} />
       </div>
     )
   }

@@ -40,7 +40,7 @@ class AddUser extends Component {
   educationalTitles = [
     {
       id: 1,
-      name: 'Licentiar??'
+      name: 'Licentiar'
     },
     {
       id: 2,
@@ -90,12 +90,10 @@ class AddUser extends Component {
 
   disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email) ? true : false
 
-  addUser = () => {
+  addUser = async () => {
     //event.preventDefault();
-    console.log(this.props.conferenceName)
     let roleArray = [];
     let ceva = this.state.roles.map(item => roleArray.push(item.id))
-    console.log(ceva, 'ceva')
     this.setState({ disableForm: true });
     let data = {
       username: this.state.email,
@@ -103,53 +101,56 @@ class AddUser extends Component {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       roles: ceva,
-      conferenceName: this.props.conferenceName,
       validAccount: 1,
       isPhd: this.state.isPhd,
       educationalTitle: this.state.eduTitle
     }
 
-    console.log(data, 'data')
-    // try {
-    //   const response = await makeRequest('addUser', {
-    //     data: {}
-    //   });
-    //   this.setState(
-    //     Object.assign({}, this.initialState, {
-    //       roles: this.state.roles,
-    //       snackbarVariant: SNACKBAR_TYPE.success,
-    //       snackbarMessage: response,
-    //       openSnackbar: true
-    //     }));
-    // } catch (err) {
-    //   this.setState({
-    //     disableForm: false,
-    //     snackbarMessage: err,
-    //     snackbarVariant: SNACKBAR_TYPE.error,
-    //     openSnackbar: true
-    //   });
-    // }
-
-    //console.log(this.state.addAnother, 'add')
-    if (this.state.addAnother) {
+    try {
+      const response = await makeRequest('addUser', {
+        data: {
+          username: this.state.email,
+          password: btoa('12345678'),
+          first_name: this.state.firstName,
+          last_name: this.state.lastName,
+          roles: ceva,
+          conference_id: 1,
+          valid_account: 1,
+          is_phd: this.state.isPhd,
+          educational_title: this.state.eduTitle
+        }
+      });
+      if (this.state.addAnother) {
+        this.setState(
+          Object.assign({}, this.initialState, {
+            snackbarVariant: SNACKBAR_TYPE.success,
+            snackbarMessage: response.msg,
+            openSnackbar: true
+          }))
+      } else {
+        this.props.closeModal();
+      }
+      // this.setState(
+      //   Object.assign({}, this.initialState, {
+      //     snackbarVariant: SNACKBAR_TYPE.success,
+      //     snackbarMessage: response,
+      //     openSnackbar: true
+      //   }));
+    } catch (err) {
       this.setState({
-        lastName: '',
-        firstName: '',
-        email: '',
-        roles: [],
-        isPhd: false,
-        eduTitle: ''
-      })
-    } else {
-      this.props.closeModal();
+        disableForm: false,
+        snackbarMessage: err,
+        snackbarVariant: SNACKBAR_TYPE.error,
+        openSnackbar: true
+      });
     }
+
   }
 
   componentDidMount() {
   }
 
   render() {
-    console.log(this.state);
     return (
       <MuiThemeProvider theme={colorScheme}>
         <React.Fragment>
@@ -159,13 +160,13 @@ class AddUser extends Component {
               <SearchBar />
             </div>
             {/* <div className="paddingInput"> */}
-              <ValidatorForm
-                ref="form"
-                className="form-add-user"
-                onSubmit={this.addUser}
-                onError={errors => console.log(errors)}
-              >
-                <div className="paddingInput">
+            <ValidatorForm
+              ref="form"
+              className="form-add-user"
+              onSubmit={this.addUser}
+              onError={errors => console.log(errors)}
+            >
+              <div className="paddingInput">
                 <TextValidator
                   name="lastName"
                   className="width"
@@ -177,8 +178,8 @@ class AddUser extends Component {
                   errorMessages={['This field is required']}
                   required
                 />
-                </div>
-                <div className="paddingInput">
+              </div>
+              <div className="paddingInput">
                 <TextValidator
                   name="firstName"
                   className="width"
@@ -190,8 +191,8 @@ class AddUser extends Component {
                   errorMessages={['This field is required']}
                   required
                 />
-                </div>
-                <div className="paddingInput">
+              </div>
+              <div className="paddingInput">
                 <TextValidator
                   name="email"
                   className="width"
@@ -203,81 +204,81 @@ class AddUser extends Component {
                   errorMessages={['This field is required', 'Email is not valid']}
                   required
                 />
-                </div>
+              </div>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="isPhd"
+                    type="checkbox"
+                    disabled={this.state.disableForm}
+                    onChange={() => this.updateisPhd()}
+                    checked={this.state.isPhd}
+                    color="primary" />
+                }
+                label="Is Phd"
+              />
+              {/* <div className="paddingInput"> */}
+              <FormControl className="width">
+                <InputLabel >Educational Title</InputLabel>
+                <Select
+                  value={this.state.eduTitle}
+                  onChange={this.handleChange("eduTitle")}
+                  //input={<Input id="select-multiple" />}
+                  // MenuProps={MenuProps}
+                  //renderValue={selected => Array.prototype.join.call(selected, ', ')}
+                  displayEmpty
+                  disabled={this.state.disableForm}
+                >
+                  {this.educationalTitles.map(item => (
+                    <MenuItem value={item.name} key={item.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {/* </div> */}
+              <div className="paddingInput">
+                <FormControl className="width">
+                  <InputLabel htmlFor="select-multiple">Roles</InputLabel>
+                  <Select
+                    multiple
+                    value={this.state.roles}
+                    onChange={this.handleChange("roles")}
+                    input={<Input id="select-multiple" />}
+                    // MenuProps={MenuProps}
+                    renderValue={selected => Array.prototype.join.call(selected, ', ')}
+                    displayEmpty
+                    disabled={this.state.disableForm}
+                  >
+                    {this.roles.map(item => (
+                      <MenuItem value={item.name} key={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+              <div>
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="isPhd"
+                      name="addAnother"
                       type="checkbox"
                       disabled={this.state.disableForm}
-                      onChange={() => this.updateisPhd()}
-                      checked={this.state.isPhd}
+                      onChange={() => this.updateAddAnother()}
+                      checked={this.state.addAnother}
                       color="primary" />
                   }
-                  label="Is Phd"
+                  label="Add another user"
                 />
-                {/* <div className="paddingInput"> */}
-                  <FormControl className="width">
-                    <InputLabel >Educational Title</InputLabel>
-                    <Select
-                      value={this.state.eduTitle}
-                      onChange={this.handleChange("eduTitle")}
-                      //input={<Input id="select-multiple" />}
-                      // MenuProps={MenuProps}
-                      //renderValue={selected => Array.prototype.join.call(selected, ', ')}
-                      displayEmpty
-                      disabled={this.state.disableForm}
-                    >
-                      {this.educationalTitles.map(item => (
-                        <MenuItem value={item.name} key={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                {/* </div> */}
-                <div className="paddingInput">
-                  <FormControl className="width">
-                    <InputLabel htmlFor="select-multiple">Roles</InputLabel>
-                    <Select
-                      multiple
-                      value={this.state.roles}
-                      onChange={this.handleChange("roles")}
-                      input={<Input id="select-multiple" />}
-                      // MenuProps={MenuProps}
-                      renderValue={selected => Array.prototype.join.call(selected, ', ')}
-                      displayEmpty
-                      disabled={this.state.disableForm}
-                    >
-                      {this.roles.map(item => (
-                        <MenuItem value={item.name} key={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
-                <div>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        name="addAnother"
-                        type="checkbox"
-                        disabled={this.state.disableForm}
-                        onChange={() => this.updateAddAnother()}
-                        checked={this.state.addAnother}
-                        color="primary" />
-                    }
-                    label="Add another user"
-                  />
-                  <input color="primary"
-                    className={`buttonAddUser${this.disableSubmit() ? ' disabled' : ''}`}
-                    disabled={this.disableSubmit() || this.state.disableForm}
-                    type="submit"
-                    value="Add user"
-                  />
-                </div>
-              </ValidatorForm>
+                <input color="primary"
+                  className={`buttonAddUser${this.disableSubmit() ? ' disabled' : ''}`}
+                  disabled={this.disableSubmit() || this.state.disableForm}
+                  type="submit"
+                  value="Add user"
+                />
+              </div>
+            </ValidatorForm>
             {/* </div> */}
           </div>
         </React.Fragment>

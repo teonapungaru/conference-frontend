@@ -97,7 +97,6 @@ class AddUser extends Component {
         //   });
         // }
 
-        console.log(this.state.addAnother, 'add')
         if (this.state.addAnother) {
             this.setState({
                 eventId: '',
@@ -115,7 +114,6 @@ class AddUser extends Component {
     }
 
     render() {
-        console.log(this.state.eventId);
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <React.Fragment>
@@ -252,13 +250,13 @@ class AddUser extends Component {
                                                 checked={this.state.addAnother}
                                                 color="primary" />
                                         }
-                                        label="Add another user"
+                                        label="Add another event"
                                     />
                                     <input color="primary"
                                         className={`buttonAddUser${this.disableSubmit() ? ' disabled' : ''}`}
                                         disabled={this.disableSubmit() || this.state.disableForm}
                                         type="submit"
-                                        value="Add user"
+                                        value="Add event"
                                     />
                                 </div>
                             </ValidatorForm>

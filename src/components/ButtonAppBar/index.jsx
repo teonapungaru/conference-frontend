@@ -31,6 +31,11 @@ class ButtonAppBar extends React.Component {
     this.state = {};
   }
 
+  logout = () => {
+    window.localStorage.clear();
+    this.props.history.push('/login')
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -38,7 +43,7 @@ class ButtonAppBar extends React.Component {
       <div className={classes.root}>
       <AppBar position="static">
         <Toolbar className={classes.grow}>
-          <Button color="inherit" className={classes.button} onClick={()=>{this.props.history.push('/login')}}>Logout</Button>
+          <Button color="inherit" className={classes.button} onClick={()=>{this.logout()}}>Logout</Button>
         </Toolbar>
       </AppBar>
     </div>

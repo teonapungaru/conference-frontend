@@ -12,7 +12,6 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Fab from '@material-ui/core/Fab';
-import Button from '@material-ui/core/Button';
 import ModalWrapped from '../Modal'
 
 import TableFooter from '@material-ui/core/TableFooter';
@@ -123,7 +122,7 @@ const styles = theme => ({
         paddingRight: '20px'
     },
     buttons: {
-        display: 'flex',
+        //display: 'flex',
         // flexDirection: 'row'
     }
 });
@@ -133,46 +132,22 @@ let newDetails = {};
 
 const details = [
     {
-        firstName: 'blaaaaaaaaa',
-        lastName: 'blaaaaaaaaaaa',
-        email: 'xxxxxxxxxx',
-        role: 'yyyyyyyyyy'
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@john.com',
+        role: 'Administrator'
     },
     {
-        firstName: 'blaaaaaaaaa',
-        lastName: 'blaaaaaaaaaaa',
-        email: 'xxxxxxxxxx',
-        role: 'yyyyyyyyyy'
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@jane.com',
+        role: 'Program committee'
     },
     {
-        firstName: 'blaaaaaaaaa',
-        lastName: 'blaaaaaaaaaaa',
-        email: 'xxxxxxxxxx',
-        role: 'yyyyyyyyyy'
-    },
-    {
-        firstName: 'blaaaaaaaaa',
-        lastName: 'blaaaaaaaaaaa',
-        email: 'xxxxxxxxxx',
-        role: 'yyyyyyyyyy'
-    },
-    {
-        firstName: 'blaaaaaaaaa',
-        lastName: 'blaaaaaaaaaaa',
-        email: 'xxxxxxxxxx',
-        role: 'yyyyyyyyyy'
-    },
-    {
-        firstName: 'blaaaaaaaaa',
-        lastName: 'blaaaaaaaaaaa',
-        email: 'xxxxxxxxxx',
-        role: 'yyyyyyyyyy'
-    },
-    {
-        firstName: 'blaaaaaaaaa',
-        lastName: 'blaaaaaaaaaaa',
-        email: 'xxxxxxxxxx',
-        role: 'yyyyyyyyyy'
+        firstName: 'Jack',
+        lastName: 'Doe',
+        email: 'jack@jack.com',
+        role: 'User'
     }
 ]
 
@@ -275,7 +250,7 @@ class SimpleTable extends React.Component {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {details.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, key) => (
+                            {this.props.users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, key) => (
                                 <TableRow key={key}>
                                     <TableCell component="th" scope="row">
                                         {row.role}

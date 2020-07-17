@@ -2,18 +2,17 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { withRouter } from 'react-router-dom';
+
+import ConferenceLogo from '../../assets/Logo-ICSTCC-2020-main.svg'
 
 import './card.sass'
 
 const styles = {
   card: {
-      maxWidth: 600,
+      width: 400,
       margin: 20,
       borderRadius: 15
   }
@@ -29,6 +28,7 @@ class ImgMediaCard extends React.Component {
 
   clickedCard = () => {
     //sessionStorage.setItem('clickedCard', true);
+    localStorage.setItem('conferenceTitle', this.props.data.title)
     this.props.history.push('/addConf');
   }
 
@@ -42,12 +42,12 @@ class ImgMediaCard extends React.Component {
           <CardActionArea onClick={this.clickedCard}>
             <div className="card">
               <div className="card-img">
-              {this.props.data.img && <img className='card-image' src={this.props.data.img} />}
+              {this.props.data.img ? <img className='card-image' src={this.props.data.img} /> : <img className='card-image' src={ConferenceLogo} />}
               </div>
               <div className="card-content">
                 <CardContent>
-                  {this.props.data.name && <Typography gutterBottom variant="h5" component="h2">
-                    {this.props.data.name}
+                  {this.props.data.title && <Typography gutterBottom variant="h5" component="h2">
+                    {this.props.data.title}
                   </Typography>}
                   {this.props.data.details && <Typography variant="body2" color="textSecondary" component="p">
                     {this.props.data.details}

@@ -7,20 +7,21 @@ import fileImg from '../../assets/file_placeholder.png';
 
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
+import { Snackbars, SNACKBAR_TYPE } from '../Snackbar';
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { Checkbox, FormControlLabel, TextField, Select, FormControl, MenuItem } from '@material-ui/core';
-import { Snackbars, SNACKBAR_TYPE } from '../Snackbar';
 import ModalWrapped from '../Modal'
-import Button from '@material-ui/core/Button';
 import Participants from '../Participants'
 
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import ButtonAppBar from '../ButtonAppBar/index'
+
+import getUnixTime from 'date-fns/getUnixTime'
+import toDate from 'date-fns/toDate'
 
 import makeRequest from '../../service/dataservice';
 
@@ -87,6 +88,8 @@ class AddConference extends Component {
             conferenceName: '',
             startDate: '',
             endDate: '',
+            country: '',
+            location: '',
             files: [],
             uploadedImage: logo,
             uploadText: 'Upload file',
@@ -97,7 +100,6 @@ class AddConference extends Component {
 
         }
     }
-    conference = 'hjhbjkhb'
 
     onDrop(files) {
         this.setState({ uploadText: 'Uploading', showUploadText: true })
@@ -128,7 +130,6 @@ class AddConference extends Component {
     disableSubmit = () => !(this.state.conferenceName) ? true : false
 
     handleOpenModal = () => {
-        console.log('bla')
         this.setState({ openModal: true })
     }
 
@@ -136,8 +137,67 @@ class AddConference extends Component {
         this.setState({ openModal: false })
     }
 
-    addConference = () => {
-        console.log(this.state)
+    getUsers = async () => {
+        const response = await makeRequest('getUsers');
+        this.setState({ users: response.msg })
+    }
+
+    getConferences = async () => {
+        const response = await makeRequest('getConferences');
+        this.setState({ conferences: response.conferences })
+    }
+
+    loadContent = async () => {
+        try {
+            const promise = await Promise.all([
+                this.getUsers(),
+                this.getConferences()
+            ]);
+            if (localStorage.getItem('conferenceTitle') !== 'Add new conference') {
+                const newState = this.state.conferences.filter(item => item.title === localStorage.getItem('conferenceTitle'));
+                this.setState({
+                    conferenceName: newState[0].title,
+                    startDate: toDate(newState[0].start_date*1000),
+                    endDate: toDate(newState[0].end_date*1000),
+                    country: newState[0].country,
+                    location: newState[0].location
+                })
+            }
+            this.setState({ renderPage: true });
+        } catch (err) {
+            this.setState({ message: err, openSnackbar: true });
+        };
+    }
+
+    componentDidMount() {
+        this.loadContent();
+    }
+
+    addConference = async () => {
+        try {
+            const response = await makeRequest('addConference', {
+                data: {
+                    country: this.state.country,
+                    end_date: getUnixTime(this.state.endDate),
+                    location: this.state.location,
+                    start_date: getUnixTime(this.state.startDate),
+                    title: this.state.conferenceName
+                }
+            });
+            this.setState({
+                snackbarVariant: SNACKBAR_TYPE.success,
+                snackbarMessage: response.msg,
+                openSnackbar: true
+            });
+            this.props.history.push('/home');
+        } catch (err) {
+            this.setState({
+                disableForm: false,
+                snackbarMessage: err.msg,
+                snackbarVariant: SNACKBAR_TYPE.error,
+                openSnackbar: true
+            });
+        }
     }
 
     nextPage = () => {
@@ -145,7 +205,6 @@ class AddConference extends Component {
             nextClicked: true,
             prevClicked: false
         })
-        console.log(this.state)
     }
     prevPage = () => {
         this.setState({
@@ -155,13 +214,15 @@ class AddConference extends Component {
     }
 
     render() {
-        console.log(this.state)
         return (
             <MuiThemeProvider theme={colorScheme}>
+                <div>
+                    <ButtonAppBar />
+                </div>
                 <React.Fragment>
                     {!this.state.nextClicked &&
                         <div>
-                            <p className="textAddConference">Add New Conference</p>
+                            {this.state.conferenceName ? <p className="textAddConference">{this.state.conferenceName}</p> : <p className="textAddConference">Add New Conference</p>}
                             <div className="add-conference-container">
                                 <div className="dropzone-parent">
                                     <Dropzone
@@ -251,7 +312,7 @@ class AddConference extends Component {
                     {this.state.nextClicked && this.state.conferenceName && <div className="add-conference-container">
                         <div className='participants'>
                             <p className="textAddConference">Participants</p>
-                            <Participants conferenceName={this.conference} />
+                            <Participants conferenceName={this.conference} users={this.state.users} />
 
                             <p className="textAddConference">Events</p>
                             {/* <Button onClick={this.handleOpenModal}>Add event</Button> */}
@@ -288,7 +349,8 @@ class AddConference extends Component {
                                 this.state.nextClicked && <input color="primary"
                                     className={`buttonAddConference${this.disableSubmit() ? ' disabled' : ''}`}
                                     //disabled={this.disableSubmit() || this.state.disableForm}
-                                    type="submit"
+                                    type="button"
+                                    onClick={() => this.addConference()}
                                     value="Add Conference"
                                 />
                             }
@@ -302,6 +364,11 @@ class AddConference extends Component {
                         open={this.state.openModal}
                     />
                 }
+                <Snackbars
+                    message={this.state.snackbarMessage}
+                    open={this.state.openSnackbar}
+                    variant={this.state.snackbarVariant}
+                    handleClose={this.handleClose} />
             </MuiThemeProvider >
         )
     }
