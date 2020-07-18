@@ -34,7 +34,7 @@ class Login extends Component {
       const response = await makeRequest('signin', { data: { credentials }});
 
       localStorage.setItem('token', response.access_token);
-      this.props.history.push('/');
+      this.props.history.push('/welcome');
     } catch (err) {
       this.setState({
         disableForm: false,
@@ -64,7 +64,7 @@ class Login extends Component {
       <div className="container-login">
         <div className="login-form">
           <div className="login-img">
-            <img className='login-image' src={ConferenceLogo}/>
+            <img alt="Conference Logo" className='login-image' src={ConferenceLogo}/>
           </div>
           <div className="login-inputs">
             <ValidatorForm

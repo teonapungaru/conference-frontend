@@ -1,5 +1,10 @@
 {
   "name": "conference_app_frontend",
+  "browserify": {
+    "transform": [
+        ["reactify", {"es6": true}]
+    ]
+  },
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -11,6 +16,7 @@
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
+    "browserify": "^16.5.1",
     "date-fns": "^2.14.0",
     "node-sass": "^4.13.0",
     "react": "^16.12.0",
@@ -21,7 +27,8 @@
     "react-material-ui-form-validator": "^2.0.9",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.0",
-    "react-truncate": "^2.4.0"
+    "react-truncate": "^2.4.0",
+    "reactify": "^1.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

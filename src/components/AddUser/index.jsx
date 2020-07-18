@@ -3,11 +3,10 @@ import { withRouter } from 'react-router-dom';
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { Checkbox, FormControlLabel, TextField, Select, FormControl, MenuItem } from '@material-ui/core';
+import { Checkbox, FormControlLabel, Select, FormControl, MenuItem } from '@material-ui/core';
 import { Snackbars, SNACKBAR_TYPE } from '../Snackbar';
 import SearchBar from '../SearchBar'
 import Input from '@material-ui/core/Input';
-import ListItemText from '@material-ui/core/ListItemText';
 import InputLabel from '@material-ui/core/InputLabel';
 
 import makeRequest from '../../service/dataservice';
@@ -93,18 +92,8 @@ class AddUser extends Component {
   addUser = async () => {
     //event.preventDefault();
     let roleArray = [];
-    let ceva = this.state.roles.map(item => roleArray.push(item.id))
+    let rolesId = this.state.roles.map(item => roleArray.push(item.id))
     this.setState({ disableForm: true });
-    let data = {
-      username: this.state.email,
-      password: btoa('12345678'),
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      roles: ceva,
-      validAccount: 1,
-      isPhd: this.state.isPhd,
-      educationalTitle: this.state.eduTitle
-    }
 
     try {
       const response = await makeRequest('addUser', {
@@ -113,7 +102,7 @@ class AddUser extends Component {
           password: btoa('12345678'),
           first_name: this.state.firstName,
           last_name: this.state.lastName,
-          roles: ceva,
+          roles: rolesId,
           conference_id: 1,
           valid_account: 1,
           is_phd: this.state.isPhd,

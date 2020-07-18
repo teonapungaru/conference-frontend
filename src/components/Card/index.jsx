@@ -42,7 +42,7 @@ class ImgMediaCard extends React.Component {
           <CardActionArea onClick={this.clickedCard}>
             <div className="card">
               <div className="card-img">
-              {this.props.data.img ? <img className='card-image' src={this.props.data.img} /> : <img className='card-image' src={ConferenceLogo} />}
+              {this.props.data.img ? <img alt="Conference Logo" className='card-image' src={this.props.data.img} /> : <img alt="Conference Logo" className='card-image' src={ConferenceLogo} />}
               </div>
               <div className="card-content">
                 <CardContent>

@@ -85,6 +85,7 @@ class AddConference extends Component {
         super(props);
 
         this.state = {
+            conferenceId: '',
             conferenceName: '',
             startDate: '',
             endDate: '',
@@ -99,6 +100,9 @@ class AddConference extends Component {
             prevClicked: false
 
         }
+
+        this.initialState = this.state;
+        this.newState = [];
     }
 
     onDrop(files) {
@@ -154,18 +158,19 @@ class AddConference extends Component {
                 this.getConferences()
             ]);
             if (localStorage.getItem('conferenceTitle') !== 'Add new conference') {
-                const newState = this.state.conferences.filter(item => item.title === localStorage.getItem('conferenceTitle'));
+                this.newState = this.state.conferences.filter(item => item.title === localStorage.getItem('conferenceTitle'));
                 this.setState({
-                    conferenceName: newState[0].title,
-                    startDate: toDate(newState[0].start_date*1000),
-                    endDate: toDate(newState[0].end_date*1000),
-                    country: newState[0].country,
-                    location: newState[0].location
+                    conferenceId: this.newState[0].id,
+                    conferenceName: this.newState[0].title,
+                    startDate: toDate(this.newState[0].start_date*1000),
+                    endDate: toDate(this.newState[0].end_date*1000),
+                    country: this.newState[0].country,
+                    location: this.newState[0].location
                 })
             }
             this.setState({ renderPage: true });
         } catch (err) {
-            this.setState({ message: err, openSnackbar: true });
+            //this.setState({ message: err, openSnackbar: true });
         };
     }
 
@@ -184,12 +189,19 @@ class AddConference extends Component {
                     title: this.state.conferenceName
                 }
             });
+            console.log(response, 'pooooost conf')
             this.setState({
-                snackbarVariant: SNACKBAR_TYPE.success,
-                snackbarMessage: response.msg,
-                openSnackbar: true
+                conferenceId: response.msg.id,
+                    conferenceName: response.msg.title,
+                    startDate: toDate(response.msg.start_date*1000),
+                    endDate: toDate(response.msg.end_date*1000),
+                    country: response.msg.country,
+                    location: response.msg.location
+                // snackbarVariant: SNACKBAR_TYPE.success,
+                // snackbarMessage: response.msg,
+                // openSnackbar: true
             });
-            this.props.history.push('/home');
+            // this.props.history.push('/home');
         } catch (err) {
             this.setState({
                 disableForm: false,
@@ -201,6 +213,19 @@ class AddConference extends Component {
     }
 
     nextPage = () => {
+        //this.addConference();
+        const { conferenceId, conferenceName, startDate, endDate, country, location } =  this.state;
+        const { conferenceId: initId, conferenceName: initName, startDate: initStart, endDate: initEnd, country: initCountry, location: initLocation } =  this.initialState;
+        console.log(this.newState[0], 'nouuu')
+        if(!this.newState[0]){
+            this.addConference(); 
+            console.log('post')
+        }else{
+        const { id: newId, title: newName, start_date: newStart, end_date: newEnd, country: newCountry, location: newLocation } =  this.newState[0];
+        console.log(conferenceId, newId, conferenceName, newName, getUnixTime(startDate), newStart, getUnixTime(endDate), newEnd, country, newCountry, location, newLocation, 'fghjgf')
+        if(conferenceId !== newId || conferenceName !== newName || getUnixTime(startDate) !== newStart || getUnixTime(endDate) !== newEnd || country !== newCountry || location !== newLocation){
+            console.log('put');
+        }}
         this.setState({
             nextClicked: true,
             prevClicked: false
@@ -214,6 +239,7 @@ class AddConference extends Component {
     }
 
     render() {
+        console.log(this.state, this.initialState, this.newState, 'fghjhgdfghgf')
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <div>
@@ -350,7 +376,7 @@ class AddConference extends Component {
                                     className={`buttonAddConference${this.disableSubmit() ? ' disabled' : ''}`}
                                     //disabled={this.disableSubmit() || this.state.disableForm}
                                     type="button"
-                                    onClick={() => this.addConference()}
+                                    // onClick={this.props.history.push('/home')}
                                     value="Add Conference"
                                 />
                             }

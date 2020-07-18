@@ -87,7 +87,6 @@ const styles = theme => ({
         lineHeight: 1.5,
         letterSpacing: 'normal',
         color: '#767676',
-        margin: 0,
         display: 'flex',
         alignSelf: 'baseline',
         margin: '0 0 0 7px'
@@ -200,7 +199,7 @@ class EventCard extends React.Component {
             truncated
         } = this.state;
 
-        const { eventDays, address, text, times, totalParticipants, participants } = this.props.data;
+        const { eventDays, address, text, times } = this.props.data;
 
         return (
             <div className={this.props.classes.root}>

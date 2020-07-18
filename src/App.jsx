@@ -13,16 +13,15 @@ import clicked from './config/clickedComponent'
 import './App.sass';
 
 class App extends Component {
-
   render() {
     return (
         <Router>
             <Switch> 
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/addConf" component={isAuthenticated(AddConference)} />
-              <Route exact path="/" component={isAuthenticated(WelcomePage)} />
-        
-              <Route component={Login} />
+              <Route path="/welcome" component={isAuthenticated(WelcomePage)} />        
+              <Route path="/login" component={Login} />
+              <Route path="/addConf" component={isAuthenticated(AddConference)} />
+             
+              <Route component={isAuthenticated(WelcomePage)} />
               
             </Switch>
         </Router>

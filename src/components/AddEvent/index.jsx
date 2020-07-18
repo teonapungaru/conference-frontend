@@ -3,16 +3,11 @@ import { withRouter } from 'react-router-dom';
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { Checkbox, FormControlLabel, TextField, Select, FormControl, MenuItem } from '@material-ui/core';
-import { Snackbars, SNACKBAR_TYPE } from '../Snackbar';
-import SearchBar from '../SearchBar'
-import Input from '@material-ui/core/Input';
-import ListItemText from '@material-ui/core/ListItemText';
+import { Checkbox, FormControlLabel, Select, FormControl, MenuItem } from '@material-ui/core';
+import { Snackbars } from '../Snackbar';
 import InputLabel from '@material-ui/core/InputLabel';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
-
-import makeRequest from '../../service/dataservice';
 
 import './addEvent.sass';
 
