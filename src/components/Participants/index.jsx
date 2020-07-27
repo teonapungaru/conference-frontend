@@ -128,7 +128,7 @@ const styles = theme => ({
 });
 
 const header = ['Role', 'Last Name', 'First Name'];
-let newDetails = {};
+// let userToEdit = {};
 
 const details = [
     {
@@ -157,24 +157,13 @@ class SimpleTable extends React.Component {
 
         this.state = {
             page: 0,
-            rowsPerPage: 5
+            rowsPerPage: 5,
+            userToModify: {},
+            users: this.props.users
         };
     }
 
-    openDialog = () => {
-        this.setState({ openDialog: true })
-    }
-
-    openEditDialog = () => {
-        this.setState({ openEditDialog: true })
-    }
-
-    handleClose = () => {
-        this.setState({ openDialog: false, openEditDialog: false, openSnackbar: false });
-    }
-
     handleOpenModal = () => {
-        console.log('bla')
         this.setState({ openModal: true })
     }
 
@@ -182,27 +171,40 @@ class SimpleTable extends React.Component {
         this.setState({ openModal: false })
     }
 
-    deleteContact = async name => {
-        let id = this.props.customers.filter(item => item.lastName === name)[0].id;
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.users !== prevState.users) {
+          return { someState: nextProps.users };
+        }
+        return null;
+      }
+    
+      componentDidUpdate(prevProps) {
+        if (prevProps.users !== this.props.users) {
+          this.setState({ users: this.props.users });
+        }
+      }
+
+    deleteUser = async username => {
         try {
-            const response = await makeRequest(`deleteCustomer`, id);
-            this.props.snackBar(response, 'success');
+            const response = await makeRequest('deleteUser', {
+                data: {
+                    username
+                }
+            });
+            // this.props.snackBar(response, 'success');
+            this.setState({
+                users: JSON.parse(JSON.stringify(this.state.users.filter(user => user.username !== username)))
+            })
         } catch (e) {
-            this.props.snackBar(e, 'error');
+            // this.props.snackBar(e, 'error');
             console.log(e);
         }
     }
 
-    edit = (phone) => {
-        let editPerson = this.props.details.filter(item => item.phoneNo === phone);
-        console.log(editPerson)
-        newDetails = {
-            city: editPerson[0].city,
-            street: editPerson[0].street,
-            phoneNo: editPerson[0].phoneNo,
-            customerId: editPerson[0].customer.id
-        }
-        this.openEditDialog();
+    edit = (username) => {
+        const userToEdit = this.props.users.find(user => user.username === username);
+        this.setState({ userToModify: userToEdit })
+        this.handleOpenModal();
     }
 
     openSnackbar = (message, type) => {
@@ -250,22 +252,22 @@ class SimpleTable extends React.Component {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {this.props.users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, key) => (
+                            {this.state.users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, key) => (
                                 <TableRow key={key}>
                                     <TableCell component="th" scope="row">
-                                        {row.role}
+                                        {row.roles}
                                     </TableCell>
                                     <TableCell component="th" scope="row">
-                                        {row.lastName}
+                                        {row.last_name}
                                     </TableCell>
                                     <TableCell component="th" scope="row">
-                                        {row.firstName}
+                                        {row.first_name}
                                     </TableCell>
                                     <TableCell align="right" className={this.props.classes.buttons}>
-                                        <IconButton aria-label="Edit" className={this.props.classes.margin} onClick={() => this.edit(row.phoneNo)}>
+                                        <IconButton aria-label="Edit" className={this.props.classes.margin} onClick={() => this.edit(row.username)}>
                                             <EditIcon fontSize="small" />
                                         </IconButton>
-                                        <IconButton aria-label="Delete" className={this.props.classes.margin} onClick={() => this.deleteContact(row.customer.lastName)}>
+                                        <IconButton aria-label="Delete" className={this.props.classes.margin} onClick={() => this.deleteUser(row.username)}>
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
                                     </TableCell>
@@ -296,24 +298,14 @@ class SimpleTable extends React.Component {
                         </TableFooter>
                     </Table>
                 </Paper>
-                {/* <FormDialog
-          onClose={this.handleClose}
-          open={this.state.openDialog}
-          fields={header}
-          title='customer'
-          snackBar={this.openSnackbar}
-        />
-        <EditDialog
-          onClose={this.handleClose}
-          open={this.state.openEditDialog}
-          editDetails={newDetails}
-          title='editDetails'
-          snackBar={this.openSnackbar}
-        /> */}
+
                 {this.state.openModal && <ModalWrapped
                     user={true}
                     onClose={this.handleModalClose}
                     open={this.state.openModal}
+                    conferenceId={this.props.conferenceId}
+                    editUser={this.state.userToModify}
+                    onEdit={this.props.changeOccurred}
                 />}
                 <Snackbars
                     message={this.state.snackbarMessage}

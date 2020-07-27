@@ -8,6 +8,11 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { withStyles } from '@material-ui/core/styles';
+import toDate from 'date-fns/toDate'
+import lightFormat from 'date-fns/lightFormat'
+import ModalWrapped from '../Modal'
+import IconButton from '@material-ui/core/IconButton';
+import makeRequest from '../../service/dataservice';
 
 const styles = theme => ({
     // root: {
@@ -63,7 +68,7 @@ const styles = theme => ({
         paddingTop: '15px'
     },
     text: {
-        width: '608px',
+        width: '608',
         // height: '54px',
         fontSize: '18px',
         fontWeight: 'normal',
@@ -143,9 +148,9 @@ const styles = theme => ({
     //     color: 'red',
     //     margin: '0 0 0 7px'
     // },
-    icon: {
-        paddingBottom: '55px'
-    },
+    // icon: {
+    //     paddingBottom: '105px'
+    // },
     line: {
         width: '608px',
         height: '1px',
@@ -165,7 +170,10 @@ const styles = theme => ({
         height: '80px',
         justifyContent: 'space-between',
         marginBottom: '-70px'
-    }
+    },
+    margin: {
+        height: '45px'
+    },
 });
 
 class EventCard extends React.Component {
@@ -178,8 +186,8 @@ class EventCard extends React.Component {
             expanded: false
         }
 
-        // this.handleTruncate = this.handleTruncate.bind(this);
-        // this.toggleLines = this.toggleLines.bind(this);
+        this.handleTruncate = this.handleTruncate.bind(this);
+        this.toggleLines = this.toggleLines.bind(this);
     }
 
     handleTruncate = (truncated) => {
@@ -193,38 +201,72 @@ class EventCard extends React.Component {
         this.setState({ expanded: !this.state.expanded })
     }
 
+    handleOpenModal = () => {
+        this.setState({ openModal: true })
+    }
+
+    handleModalClose = () => {
+        this.setState({ openModal: false })
+    }
+
+    edit = () => {
+        this.handleOpenModal();
+    }
+
+    delete = async (eventId) => {
+        try {
+            const response = await makeRequest('deleteEvent', {
+                data: {
+                    eventId
+                }
+            });
+            // this.props.snackBar(response, 'success');
+            this.props.onDelete(eventId)
+        } catch (e) {
+            // this.props.snackBar(e, 'error');
+            console.log(e);
+        }
+    }
+
     render() {
         const {
             expanded,
             truncated
         } = this.state;
 
-        const { eventDays, address, text, times } = this.props.data;
+        const { program, location, description, title } = this.props.data;
+        const start = program[0] && lightFormat(toDate(program[0] * 1000), 'dd.mm.yyyy');
+        const end = program[1] && lightFormat(toDate(program[1] * 1000), 'dd.mm.yyyy');
+        console.log(this.props.data)
 
         return (
             <div className={this.props.classes.root}>
                 <div className={this.props.classes.header}>
-                    {eventDays.length > 1 ? `${eventDays[0]} - ${eventDays[1]}` : `${eventDays[0]}`}
+                    {end ? `${start} - ${end}` : `${start}`}
                     <div className={this.props.classes.edit}>
-                        <div><EditIcon /></div>
-                        <div><DeleteIcon /></div>
+                        <IconButton aria-label="Edit" className={this.props.classes.margin} onClick={() => this.edit()}>
+                            <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton aria-label="Edit" className={this.props.classes.margin} onClick={() => this.delete(this.props.data.eventId)}>
+                            <DeleteIcon fontSize="small" />
+                        </IconButton>
                     </div>
                 </div>
                 <div className={this.props.classes.title}>
-                    Titlul evenimentului
+                    {title}
                 </div>
                 <div className={this.props.classes.text}>
                     <Truncate
                         lines={!expanded && 3}
                         ellipsis={(
-                            <div> <u><a href='#' onClick={this.toggleLines}><ExpandMoreTwoToneIcon fontSize='large' /></a></u></div>
+                            <div> <ExpandMoreTwoToneIcon fontSize='large' onClick={this.toggleLines} /> <u><a href='#' onClick={this.toggleLines}></a></u></div>
                         )}
                         onTruncate={this.handleTruncate}
                     >
-                        {text}
+                        {description}
                     </Truncate>
                     {!truncated && expanded && (
-                        <div> <u><a href='#' onClick={this.toggleLines}><ExpandLessTwoToneIcon fontSize='large' /></a></u></div>
+                        <div> <ExpandLessTwoToneIcon fontSize='large' onClick={this.toggleLines} /> <u><a href='#' onClick={this.toggleLines}></a></u></div>
                     )}
                 </div>
 
@@ -233,32 +275,31 @@ class EventCard extends React.Component {
                     <div className={this.props.classes.address}>
                         <LocationOnIcon className={this.props.classes.icon} />
                         <div>
-                            {address.text.map((item, key) =>
-                                <div className={this.props.classes.addressText} key={key}>{item}</div>
-                            )}
+                            {location}
                         </div>
                     </div>
 
-                    <div className={this.props.classes.time}>
+                    {/* <div className={this.props.classes.time}>
                         <ScheduleIcon />
                         <div>
-                            {times.map((item, key) =>
-                                // <div className={this.props.classes.timePlan}>
+                            {program.map((item, key) =>
                                 <div className={this.props.classes.eventTimes} key={key}>
-                                    {/* <div className={this.props.classes.timePlan} >{item.event}</div> */}
                                     <div className={this.props.classes.timePlan} >{`${item.hours[0]} - ${item.hours[1]}`}</div>
                                 </div>
-                                // </div>
                             )}
                         </div>
-                    </div>
+                    </div> */}
 
                 </div>
-                {/* <div className={this.props.classes.people}>
-                    <PeopleOutlineIcon />
-                    {totalParticipants > participants ? <div className={this.props.classes.participants}>{`${participants} von ${totalParticipants} möglichen Teilnehmern bisher`}</div> : <div className={this.props.classes.eventFull}>Die Veranstaltung ist leider ausgebucht</div>}
-                </div> */}
                 <div className={this.props.classes.line}></div>
+                {this.state.openModal && <ModalWrapped
+                    user={false}
+                    onClose={this.handleModalClose}
+                    open={this.state.openModal}
+                    conferenceName={this.state.conferenceName}
+                    editEvent={this.props.data}
+                // onEdit={this.props.changeOccurred}
+                />}
             </div>
         )
     }

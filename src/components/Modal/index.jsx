@@ -28,9 +28,13 @@ const styles = theme => ({
 });
 
 class ModalComponent extends React.Component {
-  state = {
-    open: true,
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      open: true
+    };
+  }
 
   handleOpen = () => {
     this.setState({ open: true });
@@ -53,7 +57,7 @@ class ModalComponent extends React.Component {
           onClose={this.handleClose}
         >
           <div style={getModalStyle()} className={classes.paper}>
-            {this.props.user ? <AddUser  closeModal={this.handleClose}/> : <AddEvent />}
+            {this.props.user ? <AddUser closeModal={this.handleClose} conferenceId={this.props.conferenceId} editUser={this.props.editUser} onEdit={this.props.onEdit}/> : <AddEvent closeModal={this.handleClose} conferenceName={this.props.conferenceName} onEdit={this.props.onEdit} editEvent={this.props.editEvent}/>}
             {/* <SimpleModalWrapped /> */}
           </div>
         </Modal>

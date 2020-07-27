@@ -27,14 +27,12 @@ class ImgMediaCard extends React.Component {
   }
 
   clickedCard = () => {
-    //sessionStorage.setItem('clickedCard', true);
     localStorage.setItem('conferenceTitle', this.props.data.title)
     this.props.history.push('/addConf');
   }
 
   render() {
     const { classes } = this.props;
-    console.log(this.props.data)
 
     return (
       //<div className="card-container">

@@ -40,44 +40,13 @@ const colorScheme = createMuiTheme({
     },
 });
 
-const info = [
-    {
-        eventDays: ['01.01.2020'],
-        totalParticipants: 5,
-        participants: 5,
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut a fringilla risus. Sed placerat vitae neque a dignissim. Donec nisi lorem, sodales egestas varius eget, convallis aliquam neque. Duis consequat, ipsum at imperdiet blandit, ligula ligula commodo dolor, eget posuere risus risus in massa. Aliquam rhoncus est et massa auctor, in mollis nunc aliquet. Praesent sapien libero, sollicitudin et porta vitae, fermentum sollicitudin ante. Fusce quis turpis interdum, cursus est non, auctor nulla. Phasellus vel maximus est. Donec augue elit, fermentum ac lectus sed, volutpat vulputate enim. Etiam finibus tristique leo non tempor. Praesent fringilla purus vel ante mattis, non auctor nulla varius.',
-        address: {
-            text: ['numele Cladirii/ locului etc (ex Palas)',
-                'line info aditionale',
-                'Strada, Nr. XXXX',
-                'Cod, Oras']
-        },
-        times: [
-            {
-                event: 'Event 1',
-                hours: ['00:00', '06:00']
-            }
-        ]
-    },
-    {
-        eventDays: ['01.01.2020'],
-        totalParticipants: 5,
-        participants: 5,
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut a fringilla risus. Sed placerat vitae neque a dignissim. Donec nisi lorem, sodales egestas varius eget, convallis aliquam neque. Duis consequat, ipsum at imperdiet blandit, ligula ligula commodo dolor, eget posuere risus risus in massa. Aliquam rhoncus est et massa auctor, in mollis nunc aliquet. Praesent sapien libero, sollicitudin et porta vitae, fermentum sollicitudin ante. Fusce quis turpis interdum, cursus est non, auctor nulla. Phasellus vel maximus est. Donec augue elit, fermentum ac lectus sed, volutpat vulputate enim. Etiam finibus tristique leo non tempor. Praesent fringilla purus vel ante mattis, non auctor nulla varius.',
-        address: {
-            text: ['numele Cladirii/ locului etc (ex Palas)',
-                'line info aditionale',
-                'Strada, Nr. XXXX',
-                'Cod, Oras']
-        },
-        times: [
-            {
-                event: 'Event 1',
-                hours: ['00:00', '06:00']
-            }
-        ]
-    }
-]
+const roles = {
+    1: 'Administrator',
+    2: 'Program Committee',
+    3: 'User'
+};
+
+const editEvent = {}
 
 class AddConference extends Component {
 
@@ -92,7 +61,6 @@ class AddConference extends Component {
             country: '',
             location: '',
             files: [],
-            uploadedImage: logo,
             uploadText: 'Upload file',
             showUploadText: false,
             logoImage: localStorage.getItem('logoImage') || logo,
@@ -105,16 +73,60 @@ class AddConference extends Component {
         this.newState = [];
     }
 
-    onDrop(files) {
+    onDropImage(files) {
+        this.setState({ uploadText: 'Uploading', showUploadText: true })
+        this.uploadImage(files[0]);
+    }
+
+    onDropText(text) {
         this.setState({ uploadText: 'Uploading', showUploadText: true })
         //this.uploadImage(files[0]);
     }
 
     onCancel() {
-        console.log('onCancel');
         this.setState({
             files: []
         });
+    }
+
+    uploadImage = async (file) => {
+        let version = Math.floor((Math.random() * 100) + 1);
+        const formData = new FormData();
+        formData.append("file", file);
+        console.log(formData, ' FILEEE')
+        const requestOptions = {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            data: formData
+        }
+
+        try {
+            const response = await makeRequest('addConferenceLogo', requestOptions);
+            // localStorage.setItem('logoImage', response.msg);
+            this.setState({ logoImage: file, showUploadText: false, uploadText: 'Upload photo' });
+        } catch (err) {
+            //   this.setState({
+            //     snackbarVariant: SNACKBAR_TYPE.error,
+            //     snackbarMessage: err,
+            //     openSnackbar: true,
+            //     showUploadText: false,
+            //     uploadText: 'Upload photo'
+            //   });
+        }
+
+         this.getLogo();
+    };
+
+    getLogo = async () => {
+        const baseUri = `${this.state.conferenceName}/${this.state.conferenceName}_conference_logo.png`;
+        try {
+            const test = await makeRequest('getLogo', baseUri);
+            this.setState({ logoImage: JSON.stringify(test) });
+            localStorage.setItem('logoImage', JSON.stringify(test));
+        } catch {
+            this.setState({ logoImage: logo });
+        }
     }
 
     handleClose = () => {
@@ -146,6 +158,45 @@ class AddConference extends Component {
         this.setState({ users: response.msg })
     }
 
+    getEvents = async () => {
+        const response = await makeRequest('getEvents', this.state.conferenceName);
+        this.setState({ events: response.sessions })
+    }
+
+    filterUsers = (users) =>
+        users.filter(user => user.roles.length && user.roles.every(elem => elem.conference_id === this.state.conferenceId))
+            .map(filteredUser => {
+                const filteredUserRoles = [...filteredUser.roles]
+                let rolesToReturn = '';
+                if (filteredUserRoles.length === 1) {
+                    rolesToReturn = roles[filteredUserRoles[0]['role_id']]
+                } else if (filteredUserRoles.length > 1) {
+                    filteredUserRoles.forEach((role, roleIdx) => {
+                        const { role_id: roleId } = role;
+                        if (roleIdx !== filteredUserRoles.length - 1) {
+                            rolesToReturn += roles[roleId] + ', ';
+                            return;
+                        }
+                        rolesToReturn += roles[roleId];
+                    })
+                }
+
+                filteredUser.roles = rolesToReturn;
+                return filteredUser;
+            })
+
+    changeOccurred = (user) => {
+        let newRoles = user.roles.map(roleId => roles[roleId])
+        user.roles = newRoles.join(', ');
+        let newUsers = [...this.state.users.filter(item => item.username !== user.username), user]
+        this.setState({ users: newUsers })
+    }
+
+    editEvent = (event) => {
+        let newEvents = [...this.state.events.filter(item => item.title !== event.title), event]
+        this.setState({ events: newEvents.reverse() })
+    }
+
     getConferences = async () => {
         const response = await makeRequest('getConferences');
         this.setState({ conferences: response.conferences })
@@ -155,20 +206,24 @@ class AddConference extends Component {
         try {
             const promise = await Promise.all([
                 this.getUsers(),
-                this.getConferences()
+                this.getConferences(),
             ]);
             if (localStorage.getItem('conferenceTitle') !== 'Add new conference') {
                 this.newState = this.state.conferences.filter(item => item.title === localStorage.getItem('conferenceTitle'));
                 this.setState({
                     conferenceId: this.newState[0].id,
                     conferenceName: this.newState[0].title,
-                    startDate: toDate(this.newState[0].start_date*1000),
-                    endDate: toDate(this.newState[0].end_date*1000),
+                    startDate: toDate(this.newState[0].start_date * 1000),
+                    endDate: toDate(this.newState[0].end_date * 1000),
                     country: this.newState[0].country,
-                    location: this.newState[0].location
+                    location: this.newState[0].location,
+                    logoImage: this.newState[0].path_to_logo
                 })
             }
-            this.setState({ renderPage: true });
+            const filteredUsers = this.filterUsers(this.state.users);
+            this.state.conferenceName && this.getEvents()
+            localStorage.getItem('logoImage') && this.getLogo()
+            this.setState({ renderPage: true, users: filteredUsers });
         } catch (err) {
             //this.setState({ message: err, openSnackbar: true });
         };
@@ -176,6 +231,33 @@ class AddConference extends Component {
 
     componentDidMount() {
         this.loadContent();
+    }
+
+    goToHome = () => {
+        this.props.hisory.push('/welcome');
+    }
+
+    editConference = async () => {
+        try {
+            const response = await makeRequest('editConference', {
+                data: {
+                    country: this.state.country,
+                    end_date: getUnixTime(this.state.endDate),
+                    location: this.state.location,
+                    path_to_description: '',
+                    path_to_logo: localStorage.getItem('logoImage'),
+                    start_date: getUnixTime(this.state.startDate),
+                    title: this.state.conferenceName
+                }
+            });
+        } catch (err) {
+            this.setState({
+                disableForm: false,
+                snackbarMessage: err.msg,
+                snackbarVariant: SNACKBAR_TYPE.error,
+                openSnackbar: true
+            });
+        }
     }
 
     addConference = async () => {
@@ -189,19 +271,14 @@ class AddConference extends Component {
                     title: this.state.conferenceName
                 }
             });
-            console.log(response, 'pooooost conf')
             this.setState({
                 conferenceId: response.msg.id,
-                    conferenceName: response.msg.title,
-                    startDate: toDate(response.msg.start_date*1000),
-                    endDate: toDate(response.msg.end_date*1000),
-                    country: response.msg.country,
-                    location: response.msg.location
-                // snackbarVariant: SNACKBAR_TYPE.success,
-                // snackbarMessage: response.msg,
-                // openSnackbar: true
+                conferenceName: response.msg.title,
+                startDate: toDate(response.msg.start_date * 1000),
+                endDate: toDate(response.msg.end_date * 1000),
+                country: response.msg.country,
+                location: response.msg.location
             });
-            // this.props.history.push('/home');
         } catch (err) {
             this.setState({
                 disableForm: false,
@@ -213,19 +290,16 @@ class AddConference extends Component {
     }
 
     nextPage = () => {
-        //this.addConference();
-        const { conferenceId, conferenceName, startDate, endDate, country, location } =  this.state;
-        const { conferenceId: initId, conferenceName: initName, startDate: initStart, endDate: initEnd, country: initCountry, location: initLocation } =  this.initialState;
-        console.log(this.newState[0], 'nouuu')
-        if(!this.newState[0]){
-            this.addConference(); 
-            console.log('post')
-        }else{
-        const { id: newId, title: newName, start_date: newStart, end_date: newEnd, country: newCountry, location: newLocation } =  this.newState[0];
-        console.log(conferenceId, newId, conferenceName, newName, getUnixTime(startDate), newStart, getUnixTime(endDate), newEnd, country, newCountry, location, newLocation, 'fghjgf')
-        if(conferenceId !== newId || conferenceName !== newName || getUnixTime(startDate) !== newStart || getUnixTime(endDate) !== newEnd || country !== newCountry || location !== newLocation){
-            console.log('put');
-        }}
+        const { conferenceId, conferenceName, startDate, endDate, country, location } = this.state;
+        const { conferenceId: initId, conferenceName: initName, startDate: initStart, endDate: initEnd, country: initCountry, location: initLocation } = this.initialState;
+        if (!this.newState[0]) {
+            this.addConference();
+        } else {
+            const { id: newId, title: newName, start_date: newStart, end_date: newEnd, country: newCountry, location: newLocation } = this.newState[0];
+            if (conferenceId !== newId || conferenceName !== newName || getUnixTime(startDate) !== newStart || getUnixTime(endDate) !== newEnd || country !== newCountry || location !== newLocation || localStorage.getItem('logo')) {
+                this.editConference();
+            }
+        }
         this.setState({
             nextClicked: true,
             prevClicked: false
@@ -238,8 +312,14 @@ class AddConference extends Component {
         })
     }
 
+    updateAfterDelete = (eventID) => {
+        this.setState({
+            events: JSON.parse(JSON.stringify(this.state.events.filter(event => event.eventId !== eventID)))
+        })
+    }
+
     render() {
-        console.log(this.state, this.initialState, this.newState, 'fghjhgdfghgf')
+        console.log('imageeeeeeee ', this.state.logoImage)
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <div>
@@ -255,7 +335,7 @@ class AddConference extends Component {
                                         className="dropzone"
                                         accept="image/jpeg, image/png"
                                         multiple={false}
-                                        onDrop={this.onDrop.bind(this)}
+                                        onDrop={this.onDropImage.bind(this)}
                                         onFileDialogCancel={this.onCancel.bind(this)}
                                     >
                                         <div className="logo">
@@ -268,7 +348,7 @@ class AddConference extends Component {
                                         className="dropzone"
                                         accept=".txt, .doc"
                                         multiple={false}
-                                        onDrop={this.onDrop.bind(this)}
+                                        onDrop={this.onDropText.bind(this)}
                                         onFileDialogCancel={this.onCancel.bind(this)}
                                     >
                                         <div className="logo">
@@ -338,7 +418,7 @@ class AddConference extends Component {
                     {this.state.nextClicked && this.state.conferenceName && <div className="add-conference-container">
                         <div className='participants'>
                             <p className="textAddConference">Participants</p>
-                            <Participants conferenceName={this.conference} users={this.state.users} />
+                            <Participants conferenceId={this.state.conferenceId} users={this.state.users} changeOccurred={this.changeOccurred} />
 
                             <p className="textAddConference">Events</p>
                             {/* <Button onClick={this.handleOpenModal}>Add event</Button> */}
@@ -346,8 +426,8 @@ class AddConference extends Component {
                                 <AddIcon />
                             </Fab>
                             <div className='events'>
-                                {info.map(data =>
-                                    <EventCard data={data} />
+                                {this.state.events.map(data =>
+                                    <EventCard key={data.eventId} data={data} onDelete={this.updateAfterDelete}/>
                                 )}
                             </div>
 
@@ -388,6 +468,9 @@ class AddConference extends Component {
                         user={false}
                         onClose={this.handleModalClose}
                         open={this.state.openModal}
+                        conferenceName={this.state.conferenceName}
+                        onEdit={this.editEvent}
+                        editEvent={editEvent}
                     />
                 }
                 <Snackbars

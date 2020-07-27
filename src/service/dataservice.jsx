@@ -10,8 +10,9 @@ const METHODS = {
 }
 
 const BASE_URL_AUTH = 'http://localhost:4321';
-const BASE_URL_ADMIN = 'http://localhost:5000';
+const BASE_URL_ADMIN = 'http://localhost:5005';
 const BASE_URL_CONFERENCE = 'http://localhost:5002';
+const BASE_URL_FILES = 'http://localhost:5007';
 
 const CONFIG = {
     'signin': {
@@ -49,11 +50,6 @@ const CONFIG = {
         url: `${BASE_URL_ADMIN}/api/admin/conferences`,
         autheticated: true
     },
-    'addEvent': {
-        method: METHODS.POST,
-        url: `${BASE_URL_ADMIN}/api/admin/conferences/sessions`,
-        autheticated: true
-    },
     'editEvent': {
         method: METHODS.PUT,
         url: `${BASE_URL_ADMIN}/api/admin/conferences/sessions`,
@@ -84,6 +80,16 @@ const CONFIG = {
         url: `${BASE_URL_CONFERENCE}/api/conferences`,
         autheticated: true
     },
+    'addConferenceLogo': {
+        method: METHODS.POST,
+        url: `${BASE_URL_FILES}/api/files/conference_logo/titlu`,
+        autheticated: true
+    },
+    'getLogo': {
+        method: METHODS.GET,
+        url: `${BASE_URL_FILES}/api/files/conference_logo`,
+        autheticated: true
+    },
 }
 
 const makeRequest = (httpCall, payload = {}) => {
@@ -108,7 +114,7 @@ const makeRequest = (httpCall, payload = {}) => {
         try {
             const response = await axios({
                 method: requestData.method,
-                url: httpCall === 'getEvents' ? `${requestData.url}/${payload}/sessions` : requestData.url,
+                url: httpCall === 'getEvents' ? `${requestData.url}/${payload}/sessions` : (httpCall === 'getLogo' ? `${requestData.url}/${payload}` : requestData.url),
                 ...payload,
             })
 

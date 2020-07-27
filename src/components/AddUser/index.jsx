@@ -39,15 +39,19 @@ class AddUser extends Component {
   educationalTitles = [
     {
       id: 1,
-      name: 'Licentiar'
+      name: 'Teaching Assistant'
     },
     {
       id: 2,
-      name: '???'
+      name: 'Assistent Professor/Lecturer'
     },
     {
       id: 3,
-      name: '???'
+      name: 'Associate Professor/Senior Lecturer'
+    },
+    {
+      id: 4,
+      name: 'Professor'
     }
   ]
 
@@ -63,6 +67,7 @@ class AddUser extends Component {
       roleId: [],
       addAnother: false,
       isPhd: false,
+      notPhd: false,
       eduTitle: ''
     }
 
@@ -83,32 +88,35 @@ class AddUser extends Component {
     this.setState({ addAnother: !this.state.addAnother });
   }
 
-  updateisPhd() {
-    this.setState({ isPhd: !this.state.isPhd })
+  updateisPhd(isPhd) {
+    this.setState({ isPhd, notPhd: !isPhd})
   }
 
   disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email) ? true : false
 
-  addUser = async () => {
+  updateUser = async () => {
     //event.preventDefault();
+    const editingUser = !!Object.keys(this.props.editUser).length;
     let roleArray = [];
     let rolesId = this.state.roles.map(item => roleArray.push(item.id))
     this.setState({ disableForm: true });
+    const userDetails = {
+      username: this.state.email,
+      password: btoa('12345678'),
+      first_name: this.state.firstName,
+      last_name: this.state.lastName,
+      roles: rolesId,
+      conference_id: this.props.conferenceId,
+      valid_account: 1,
+      is_phd: this.state.isPhd,
+      educational_title: this.state.eduTitle
+    }
 
     try {
-      const response = await makeRequest('addUser', {
-        data: {
-          username: this.state.email,
-          password: btoa('12345678'),
-          first_name: this.state.firstName,
-          last_name: this.state.lastName,
-          roles: rolesId,
-          conference_id: 1,
-          valid_account: 1,
-          is_phd: this.state.isPhd,
-          educational_title: this.state.eduTitle
-        }
+      const response = await makeRequest(editingUser ? 'editUser' : 'addUser', {
+        data: userDetails
       });
+      this.props.onEdit(userDetails);
       if (this.state.addAnother) {
         this.setState(
           Object.assign({}, this.initialState, {
@@ -119,12 +127,6 @@ class AddUser extends Component {
       } else {
         this.props.closeModal();
       }
-      // this.setState(
-      //   Object.assign({}, this.initialState, {
-      //     snackbarVariant: SNACKBAR_TYPE.success,
-      //     snackbarMessage: response,
-      //     openSnackbar: true
-      //   }));
     } catch (err) {
       this.setState({
         disableForm: false,
@@ -137,13 +139,22 @@ class AddUser extends Component {
   }
 
   componentDidMount() {
+    const { educational_title: eduTitle, first_name: firstName, is_phd: isPhd, last_name: lastName, roles, username: email } = this.props.editUser;
+    Object.keys(this.props.editUser).length && this.setState({
+        eduTitle,
+        firstName,
+        lastName,
+        isPhd,
+        roles: roles.split(', '),
+        email
+    })
   }
 
   render() {
     return (
       <MuiThemeProvider theme={colorScheme}>
         <React.Fragment>
-          <p className="textAddUser">Add user</p>
+          {Object.keys(this.props.editUser).length ? <p className="textAddUser">Edit user {this.props.editUser.last_name}</p> : <p className="textAddUser">Add user</p>}
           <div className="add-user-container">
             <div className="search">
               <SearchBar />
@@ -152,7 +163,7 @@ class AddUser extends Component {
             <ValidatorForm
               ref="form"
               className="form-add-user"
-              onSubmit={this.addUser}
+              onSubmit={this.updateUser}
               onError={errors => console.log(errors)}
             >
               <div className="paddingInput">
@@ -200,11 +211,23 @@ class AddUser extends Component {
                     name="isPhd"
                     type="checkbox"
                     disabled={this.state.disableForm}
-                    onChange={() => this.updateisPhd()}
-                    checked={this.state.isPhd}
+                    onChange={() => this.updateisPhd(true)}
+                    checked={!!this.state.isPhd}
                     color="primary" />
                 }
-                label="Is Phd"
+                label="Phd"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="notPhd"
+                    type="checkbox"
+                    disabled={this.state.disableForm}
+                    onChange={() => this.updateisPhd(false)}
+                    checked={this.state.notPhd}
+                    color="primary" />
+                }
+                label="Not Phd ???? am uitat"
               />
               {/* <div className="paddingInput"> */}
               <FormControl className="width">
@@ -212,9 +235,6 @@ class AddUser extends Component {
                 <Select
                   value={this.state.eduTitle}
                   onChange={this.handleChange("eduTitle")}
-                  //input={<Input id="select-multiple" />}
-                  // MenuProps={MenuProps}
-                  //renderValue={selected => Array.prototype.join.call(selected, ', ')}
                   displayEmpty
                   disabled={this.state.disableForm}
                 >

@@ -4,10 +4,15 @@ import { withRouter } from 'react-router-dom';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Checkbox, FormControlLabel, Select, FormControl, MenuItem } from '@material-ui/core';
-import { Snackbars } from '../Snackbar';
 import InputLabel from '@material-ui/core/InputLabel';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
+import { Snackbars, SNACKBAR_TYPE } from '../Snackbar';
+import getUnixTime from 'date-fns/getUnixTime'
+import Input from '@material-ui/core/Input';
+import toDate from 'date-fns/toDate'
+
+import makeRequest from '../../service/dataservice';
 
 import './addEvent.sass';
 
@@ -18,6 +23,21 @@ const colorScheme = createMuiTheme({
 });
 
 class AddUser extends Component {
+
+    ROLES = [
+        {
+            id: 1,
+            name: 'Administrator'
+        },
+        {
+            id: 2,
+            name: 'Program Committee'
+        },
+        {
+            id: 3,
+            name: 'User'
+        }
+    ]
 
     eventTypes = [
         {
@@ -31,6 +51,10 @@ class AddUser extends Component {
         {
             id: 2,
             name: 'Invited Session'
+        },
+        {
+            id: 3,
+            name: 'Plenary Session'
         }
     ]
 
@@ -44,7 +68,10 @@ class AddUser extends Component {
             disableForm: false,
             chair: '',
             coChair: '',
-            addAnother: false
+            addAnother: false,
+            roles: [],
+            roleId: [],
+            description: ''
         }
 
         this.initialState = this.state;
@@ -70,42 +97,107 @@ class AddUser extends Component {
 
     disableSubmit = () => !(this.state.eventId && this.state.eventName && this.state.location && this.state.chair && this.state.coChair) ? true : false
 
-    addEvent = () => {
-        //this.setState({ disableForm: true });
-        // try {
-        //   const response = await makeRequest('addUser', {
-        //     data: {}
-        //   });
-        //   this.setState(
-        //     Object.assign({}, this.initialState, {
-        //       roles: this.state.roles,
-        //       snackbarVariant: SNACKBAR_TYPE.success,
-        //       snackbarMessage: response,
-        //       openSnackbar: true
-        //     }));
-        // } catch (err) {
-        //   this.setState({
-        //     disableForm: false,
-        //     snackbarMessage: err,
-        //     snackbarVariant: SNACKBAR_TYPE.error,
-        //     openSnackbar: true
-        //   });
-        // }
+    addEvent = async () => {
+        this.setState({ disableForm: true });
+        let roleArray = [];
+        let rolesNames = this.state.roles.map(item => roleArray.push(item.name))
+        let data = {};
 
-        if (this.state.addAnother) {
+        switch (this.state.eventId) {
+            case -1:
+                data = {
+                    eventId: this.state.eventId,
+                    conferenceTitle: this.props.conferenceName,
+                    type: this.eventTypes.filter(event => event.id === this.state.eventId ? event.name : '').reduce((prev, current) => prev || current),
+                    title: this.state.eventName,
+                    program: [getUnixTime(this.state.startDate), getUnixTime(this.state.endDate)],
+                    location: this.state.location,
+                    description: this.state.description,
+                    allowed_roles: rolesNames
+                };
+                break;
+            case 1:
+            case 2:
+                data = {
+                    eventId: this.state.eventId,
+                    conferenceTitle: this.props.conferenceName,
+                    type: this.eventTypes.filter(event => event.id === this.state.eventId ? event.name : '').reduce((prev, current) => prev || current),
+                    title: this.state.eventName,
+                    program: [getUnixTime(this.state.startDate), getUnixTime(this.state.endDate)],
+                    location: this.state.location,
+                    description: this.state.description,
+                    chair: this.state.chair,
+                    co_chair: this.state.coChair,
+                    allowed_roles: rolesNames
+                };
+                break;
+            case 3:
+                data = {
+                    eventId: this.state.eventId,
+                    conferenceTitle: this.props.conferenceName,
+                    type: this.eventTypes.filter(event => event.id === this.state.eventId ? event.name : '').reduce((prev, current) => prev || current),
+                    title: this.state.eventName,
+                    program: [getUnixTime(this.state.startDate), getUnixTime(this.state.endDate)],
+                    location: this.state.location,
+                    description: this.state.description,
+                    chair: this.state.chair,
+                    co_chair: this.state.coChair,
+                    allowed_roles: rolesNames,
+                    plenary_speaker_name: this.state.plenarySpeakerName,
+                    plenary_speaker_description: this.state.plenarySpeakerDescription
+                };
+                break;
+        }
+        try {
+            const response = await makeRequest('editEvent', {
+                data
+            });
+            this.props.onEdit(data);
+            if (this.state.addAnother) {
+                this.setState(
+                    Object.assign({}, this.initialState, {
+                        snackbarVariant: SNACKBAR_TYPE.success,
+                        snackbarMessage: response.msg,
+                        openSnackbar: true
+                    }))
+            } else {
+                this.props.closeModal();
+            }
+            // this.setState(
+            //   Object.assign({}, this.initialState, {
+            //     snackbarVariant: SNACKBAR_TYPE.success,
+            //     snackbarMessage: response,
+            //     openSnackbar: true
+            //   }));
+        } catch (err) {
             this.setState({
-                eventId: '',
-                eventName: '',
-                location: '',
-                chair: '',
-                coChair: ''
-            })
-        } else {
-            this.props.closeModal();
+                disableForm: false,
+                snackbarMessage: err,
+                snackbarVariant: SNACKBAR_TYPE.error,
+                openSnackbar: true
+            });
         }
     }
 
     componentDidMount() {
+        const { allowed_roles: roles, chair, co_chair: coChair, description, type, location, program, title: eventName } = this.props.editEvent;
+        const eventId = Object.keys(this.props.editEvent).length && type['id'];
+        const startDate = Object.keys(this.props.editEvent).length && toDate(program[0] * 1000);
+        const endDate = Object.keys(this.props.editEvent).length && toDate(program[1] * 1000);
+        Object.keys(this.props.editEvent).length && this.setState({
+            roles: roles.reduce((acc, item) =>  {
+                acc.push(this.ROLES[item].name);
+                return acc;
+            }, []),
+            chair,
+            coChair,
+            description,
+            eventId,
+            location,
+            startDate,
+            endDate,
+            eventName
+        })
     }
 
     render() {
@@ -133,6 +225,27 @@ class AddUser extends Component {
                                         >
                                             {this.eventTypes.map(item => (
                                                 <MenuItem value={item.id} key={item.id}>
+                                                    {item.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                                <div className="paddingInput">
+                                    <FormControl className="width">
+                                        <InputLabel htmlFor="select-multiple">Allowed Roles</InputLabel>
+                                        <Select
+                                            multiple
+                                            value={this.state.roles}
+                                            onChange={this.handleChange("roles")}
+                                            input={<Input id="select-multiple" />}
+                                            // MenuProps={MenuProps}
+                                            renderValue={selected => Array.prototype.join.call(selected, ', ')}
+                                            displayEmpty
+                                            disabled={this.state.disableForm}
+                                        >
+                                            {this.ROLES.map(item => (
+                                                <MenuItem value={item.name} key={item.id}>
                                                     {item.name}
                                                 </MenuItem>
                                             ))}
@@ -172,7 +285,6 @@ class AddUser extends Component {
                                     validators={['required']}
                                     errorMessages={['This field is required']}
                                     required
-                                    multiline
                                 />
                                 <div className="day-picker">
                                     <DayPickerInput
@@ -188,7 +300,7 @@ class AddUser extends Component {
                                         required
                                     />
                                 </div>
-                                {this.state.eventId === 2 && <TextValidator
+                                {this.state.eventId === 3 && <TextValidator
                                     name="plenarySpeakerName"
                                     className="width"
                                     label="Plenary Speaker Name"
@@ -199,7 +311,7 @@ class AddUser extends Component {
                                     errorMessages={['This field is required']}
                                     required
                                 />}
-                                {this.state.eventId === 2 && <TextValidator
+                                {this.state.eventId === 3 && <TextValidator
                                     name="plenarySpeakerDescription"
                                     className="description"
                                     label="Plenary Speaker Description"
@@ -211,7 +323,7 @@ class AddUser extends Component {
                                     required
                                     multiline
                                 />}
-                                <TextValidator
+                                {this.state.eventId !== -1 && <TextValidator
                                     name="chair"
                                     className="width"
                                     label="Chair"
@@ -221,8 +333,8 @@ class AddUser extends Component {
                                     validators={['required']}
                                     errorMessages={['This field is required']}
                                     required
-                                />
-                                <TextValidator
+                                />}
+                                {this.state.eventId !== -1 && <TextValidator
                                     name="coChair"
                                     className="width"
                                     label="Co-Chair"
@@ -232,7 +344,7 @@ class AddUser extends Component {
                                     validators={['required']}
                                     errorMessages={['This field is required']}
                                     required
-                                />
+                                />}
 
                                 <div>
                                     <FormControlLabel
