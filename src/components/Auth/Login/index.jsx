@@ -27,6 +27,7 @@ class Login extends Component {
 
   handleSubmit = async (event) => {
 
+    console.disableYellowBox = true;
     const concatCred = `${this.state.email}:${this.state.password}`;
     const credentials = btoa(concatCred);
 

@@ -94,7 +94,6 @@ class AddUser extends Component {
     }
 
     handleDayChange = prop => value => {
-        console.log('VALUEEEE', value)
         this.setState({ [prop]: value });
     };
 
@@ -165,11 +164,6 @@ class AddUser extends Component {
             });
             this.props.eventToEdit(data);
             if (this.state.addAnother) {
-                console.log('OBJECT ASSIGNS', Object.assign({}, this.initialState, {
-                    snackbarVariant: SNACKBAR_TYPE.success,
-                    snackbarMessage: response.msg,
-                    openSnackbar: true
-                }))
                 this.setState(
                     Object.assign({}, this.initialState, {
                         snackbarVariant: SNACKBAR_TYPE.success,
@@ -203,7 +197,7 @@ class AddUser extends Component {
         const endDate = Object.keys(this.props.editEvent).length && toDate(program[1] * 1000);
         Object.keys(this.props.editEvent).length && this.setState({
             roles: roles.reduce((acc, item) => {
-                acc.push(this.ROLES[item].name);
+                acc.push(this.ROLES[item - 1].name);
                 return acc;
             }, []),
             chair,
@@ -218,7 +212,6 @@ class AddUser extends Component {
     }
 
     render() {
-        console.log('this.state.startDate', this.state.startDate )
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <React.Fragment>

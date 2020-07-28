@@ -194,7 +194,7 @@ class AddConference extends Component {
     }
 
     editEvent = (event) => {
-        let newEvents = [...this.state.events.filter(item => item.eventId !== event.eventId), event]
+        let newEvents = this.state.events ? [...this.state.events.filter(item => item.eventId !== event.eventId), event] : [event];
         this.setState({ events: newEvents.reverse() })
     }
 
@@ -426,7 +426,7 @@ class AddConference extends Component {
                                 <AddIcon />
                             </Fab>
                             <div className='events'>
-                                {this.state.events.map(data =>
+                                {this.state.events && this.state.events.map(data =>
                                     <EventCard key={data.eventId} data={data} onDelete={this.updateAfterDelete} eventToEdit={this.editEvent} conferenceName={this.state.conferenceName}/>
                                 )}
                             </div>

@@ -67,7 +67,6 @@ class AddUser extends Component {
       roleId: [],
       addAnother: false,
       isPhd: false,
-      notPhd: false,
       eduTitle: ''
     }
 
@@ -89,10 +88,10 @@ class AddUser extends Component {
   }
 
   updateisPhd(isPhd) {
-    this.setState({ isPhd: !isPhd})
+    this.setState({ isPhd: !this.state.isPhd})
   }
 
-  disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email && this.state.roles.length && this.state.isPhd && this.state.eduTitle) ? true : false
+  disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email && this.state.roles.length && this.state.eduTitle) ? true : false
 
   updateUser = async () => {
     //event.preventDefault();
@@ -111,7 +110,6 @@ class AddUser extends Component {
       is_phd: this.state.isPhd,
       educational_title: this.state.eduTitle
     }
-
     try {
       const response = await makeRequest(editingUser ? 'editUser' : 'addUser', {
         data: userDetails

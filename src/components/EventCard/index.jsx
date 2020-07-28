@@ -2,8 +2,6 @@ import React from 'react';
 import Truncate from 'react-truncate';
 import ExpandMoreTwoToneIcon from '@material-ui/icons/ExpandMoreTwoTone';
 import ExpandLessTwoToneIcon from '@material-ui/icons/ExpandLessTwoTone';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-// import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -15,29 +13,10 @@ import IconButton from '@material-ui/core/IconButton';
 import makeRequest from '../../service/dataservice';
 
 const styles = theme => ({
-    // root: {
-    //     width: '100%',
-    //     marginTop: theme.spacing.unit * 2,
-    //     overflowX: 'auto',
-    // },
-    // header: {
-    //     minWidth: 300,
-    // },
-    // title: {
-    //     margin: theme.spacing.unit / 2,
-    // },
-    // text: {
-    //     width: '80px',
-    //     paddingRight: '20px'
-    // }
     root: {
         width: 500,
-        // height: 'auto',
         display: 'flex',
-        flexDirection: 'column',
-        // alignSelf: 'center'
-        //paddingTop: '20px'
-
+        flexDirection: 'column'
     },
     header: {
         display: 'flex',
@@ -138,19 +117,6 @@ const styles = theme => ({
         color: '#767676',
         margin: '0 0 0 7px'
     },
-    // eventFull: {
-    //     fontSize: '12px',
-    //     fontWeight: 'normal',
-    //     fontStretch: 'normal',
-    //     fontStyle: 'normal',
-    //     lineHeight: 1.5,
-    //     letterSpacing: 'normal',
-    //     color: 'red',
-    //     margin: '0 0 0 7px'
-    // },
-    // icon: {
-    //     paddingBottom: '105px'
-    // },
     line: {
         width: '608px',
         height: '1px',
@@ -164,9 +130,7 @@ const styles = theme => ({
     edit: {
         display: 'flex',
         alignSelf: 'flex-end',
-        // flexDirection: 'column',
         width: '80px',
-        /* padding-top: 50px; */
         height: '80px',
         justifyContent: 'space-between',
         marginBottom: '-70px'
@@ -220,10 +184,8 @@ class EventCard extends React.Component {
                     eventId
                 }
             });
-            // this.props.snackBar(response, 'success');
             this.props.onDelete(eventId)
         } catch (e) {
-            // this.props.snackBar(e, 'error');
             console.log(e);
         }
     }
@@ -237,8 +199,6 @@ class EventCard extends React.Component {
         const { program, location, description, title } = this.props.data;
         const start = program[0] && lightFormat(toDate(program[0] * 1000), 'dd.mm.yyyy');
         const end = program[1] && lightFormat(toDate(program[1] * 1000), 'dd.mm.yyyy');
-
-        console.log(this.props.conferenceName, 'event carddd')
 
         return (
             <div className={this.props.classes.root}>
