@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-import { navigation } from '../components/config/path';
-
 const METHODS = {
     GET: 'GET',
     POST: 'POST',
@@ -10,7 +8,7 @@ const METHODS = {
 }
 
 const BASE_URL_AUTH = 'http://localhost:4321';
-const BASE_URL_ADMIN = 'http://localhost:5005';
+const BASE_URL_ADMIN = 'http://localhost:5000';
 const BASE_URL_CONFERENCE = 'http://localhost:5002';
 const BASE_URL_FILES = 'http://localhost:5007';
 
@@ -104,7 +102,6 @@ const makeRequest = (httpCall, payload = {}) => {
             const token = localStorage.getItem('token');
 
             if (!token) {
-                window.location.replace(navigation.login);
                 return reject('No token');
             }
 
@@ -122,7 +119,6 @@ const makeRequest = (httpCall, payload = {}) => {
         } catch (err) {
             console.log(err.headers)
             if (err.response.status === 401 && httpCall !== 'signin') {
-                window.location.replace(navigation.login);
                 localStorage.removeItem('token');
             }
             return reject(err.response.data.msg|| "Something went wrong please refresh");

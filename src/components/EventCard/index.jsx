@@ -237,7 +237,8 @@ class EventCard extends React.Component {
         const { program, location, description, title } = this.props.data;
         const start = program[0] && lightFormat(toDate(program[0] * 1000), 'dd.mm.yyyy');
         const end = program[1] && lightFormat(toDate(program[1] * 1000), 'dd.mm.yyyy');
-        console.log(this.props.data)
+
+        console.log(this.props.conferenceName, 'event carddd')
 
         return (
             <div className={this.props.classes.root}>
@@ -279,26 +280,15 @@ class EventCard extends React.Component {
                         </div>
                     </div>
 
-                    {/* <div className={this.props.classes.time}>
-                        <ScheduleIcon />
-                        <div>
-                            {program.map((item, key) =>
-                                <div className={this.props.classes.eventTimes} key={key}>
-                                    <div className={this.props.classes.timePlan} >{`${item.hours[0]} - ${item.hours[1]}`}</div>
-                                </div>
-                            )}
-                        </div>
-                    </div> */}
-
                 </div>
                 <div className={this.props.classes.line}></div>
                 {this.state.openModal && <ModalWrapped
                     user={false}
                     onClose={this.handleModalClose}
                     open={this.state.openModal}
-                    conferenceName={this.state.conferenceName}
+                    conferenceName={this.props.conferenceName}
                     editEvent={this.props.data}
-                // onEdit={this.props.changeOccurred}
+                    eventToEdit={this.props.eventToEdit}
                 />}
             </div>
         )

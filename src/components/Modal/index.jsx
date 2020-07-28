@@ -47,6 +47,7 @@ class ModalComponent extends React.Component {
 
   render() {
     const { classes } = this.props;
+    console.log(this.props.conferenceName, 'numeeee')
 
     return (
       <div>
@@ -57,7 +58,7 @@ class ModalComponent extends React.Component {
           onClose={this.handleClose}
         >
           <div style={getModalStyle()} className={classes.paper}>
-            {this.props.user ? <AddUser closeModal={this.handleClose} conferenceId={this.props.conferenceId} editUser={this.props.editUser} onEdit={this.props.onEdit}/> : <AddEvent closeModal={this.handleClose} conferenceName={this.props.conferenceName} onEdit={this.props.onEdit} editEvent={this.props.editEvent}/>}
+            {this.props.user ? <AddUser closeModal={this.handleClose} conferenceId={this.props.conferenceId} editUser={this.props.editUser} onEdit={this.props.onEdit}/> : <AddEvent closeModal={this.handleClose} conferenceName={this.props.conferenceName} eventToEdit={this.props.eventToEdit} editEvent={this.props.editEvent}/>}
             {/* <SimpleModalWrapped /> */}
           </div>
         </Modal>

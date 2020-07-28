@@ -93,7 +93,6 @@ class AddConference extends Component {
         let version = Math.floor((Math.random() * 100) + 1);
         const formData = new FormData();
         formData.append("file", file);
-        console.log(formData, ' FILEEE')
         const requestOptions = {
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -106,24 +105,26 @@ class AddConference extends Component {
             // localStorage.setItem('logoImage', response.msg);
             this.setState({ logoImage: file, showUploadText: false, uploadText: 'Upload photo' });
         } catch (err) {
-            //   this.setState({
-            //     snackbarVariant: SNACKBAR_TYPE.error,
-            //     snackbarMessage: err,
-            //     openSnackbar: true,
-            //     showUploadText: false,
-            //     uploadText: 'Upload photo'
-            //   });
+              this.setState({
+                snackbarVariant: SNACKBAR_TYPE.error,
+                snackbarMessage: err.msg,
+                openSnackbar: true,
+                showUploadText: false,
+                uploadText: 'Upload photo'
+              });
         }
 
-         this.getLogo();
+        this.getLogo();
     };
 
     getLogo = async () => {
         const baseUri = `${this.state.conferenceName}/${this.state.conferenceName}_conference_logo.png`;
         try {
             const test = await makeRequest('getLogo', baseUri);
-            this.setState({ logoImage: JSON.stringify(test) });
-            localStorage.setItem('logoImage', JSON.stringify(test));
+            let binaryData = atob(test)
+            binaryData.push(test)
+            this.setState({ logoImage: new Blob(binaryData, { type: "image/png" }) });
+            localStorage.setItem('logoImage', new Blob(this.convertToByteArray(binaryData), { type: "image/png" }));
         } catch {
             this.setState({ logoImage: logo });
         }
@@ -189,11 +190,11 @@ class AddConference extends Component {
         let newRoles = user.roles.map(roleId => roles[roleId])
         user.roles = newRoles.join(', ');
         let newUsers = [...this.state.users.filter(item => item.username !== user.username), user]
-        this.setState({ users: newUsers })
+        this.setState({ users: newUsers.reverse() })
     }
 
     editEvent = (event) => {
-        let newEvents = [...this.state.events.filter(item => item.title !== event.title), event]
+        let newEvents = [...this.state.events.filter(item => item.eventId !== event.eventId), event]
         this.setState({ events: newEvents.reverse() })
     }
 
@@ -245,7 +246,7 @@ class AddConference extends Component {
                     end_date: getUnixTime(this.state.endDate),
                     location: this.state.location,
                     path_to_description: '',
-                    path_to_logo: localStorage.getItem('logoImage'),
+                    path_to_logo: '',
                     start_date: getUnixTime(this.state.startDate),
                     title: this.state.conferenceName
                 }
@@ -319,7 +320,6 @@ class AddConference extends Component {
     }
 
     render() {
-        console.log('imageeeeeeee ', this.state.logoImage)
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <div>
@@ -340,7 +340,7 @@ class AddConference extends Component {
                                     >
                                         <div className="logo">
                                             <p>Logo</p>
-                                            <img src={this.state.logoImage} width="150" height="150" alt="Logo" />
+                                            <img srcObject={this.state.logoImage} width="150" height="150" alt="Logo" />
                                             <span className={this.state.showUploadText ? "show" : ""}>{this.state.uploadText}</span>
                                         </div>
                                     </Dropzone>
@@ -427,7 +427,7 @@ class AddConference extends Component {
                             </Fab>
                             <div className='events'>
                                 {this.state.events.map(data =>
-                                    <EventCard key={data.eventId} data={data} onDelete={this.updateAfterDelete}/>
+                                    <EventCard key={data.eventId} data={data} onDelete={this.updateAfterDelete} eventToEdit={this.editEvent} conferenceName={this.state.conferenceName}/>
                                 )}
                             </div>
 
@@ -469,7 +469,7 @@ class AddConference extends Component {
                         onClose={this.handleModalClose}
                         open={this.state.openModal}
                         conferenceName={this.state.conferenceName}
-                        onEdit={this.editEvent}
+                        eventToEdit={this.editEvent}
                         editEvent={editEvent}
                     />
                 }

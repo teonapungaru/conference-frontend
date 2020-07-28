@@ -2,7 +2,12 @@
   "name": "conference_app_frontend",
   "browserify": {
     "transform": [
-        ["reactify", {"es6": true}]
+      [
+        "reactify",
+        {
+          "es6": true
+        }
+      ]
     ]
   },
   "version": "0.1.0",

@@ -71,7 +71,9 @@ class AddUser extends Component {
             addAnother: false,
             roles: [],
             roleId: [],
-            description: ''
+            description: '',
+            startDate: new String(),
+            endDate: new String()
         }
 
         this.initialState = this.state;
@@ -92,10 +94,19 @@ class AddUser extends Component {
     }
 
     handleDayChange = prop => value => {
+        console.log('VALUEEEE', value)
         this.setState({ [prop]: value });
     };
 
-    disableSubmit = () => !(this.state.eventId && this.state.eventName && this.state.location && this.state.chair && this.state.coChair) ? true : false
+    disableSubmit = () => {
+        switch (this.state.eventId) {
+            case -1: return !(this.state.eventId && this.state.roles.length && this.state.eventName && this.state.location && this.state.description && this.state.startDate && this.state.endDate) ? true : false;
+            case 1:
+            case 2: return !(this.state.eventId && this.state.roles.length && this.state.eventName && this.state.location && this.state.description && this.state.startDate && this.state.endDate && this.state.chair && this.state.coChair) ? true : false;
+            case 3: return !(this.state.eventId && this.state.roles.length && this.state.eventName && this.state.location && this.state.description && this.state.startDate && this.state.endDate && this.state.chair && this.state.coChair && this.state.plenarySpeakerName && this.state.plenarySpeakerDescription) ? true : false;
+            default: return !(this.state.eventId && this.state.roles.length && this.state.eventName && this.state.location && this.state.description && this.state.startDate && this.state.endDate && this.state.chair && this.state.coChair) ? true : false;
+        }
+    }
 
     addEvent = async () => {
         this.setState({ disableForm: true });
@@ -152,8 +163,13 @@ class AddUser extends Component {
             const response = await makeRequest('editEvent', {
                 data
             });
-            this.props.onEdit(data);
+            this.props.eventToEdit(data);
             if (this.state.addAnother) {
+                console.log('OBJECT ASSIGNS', Object.assign({}, this.initialState, {
+                    snackbarVariant: SNACKBAR_TYPE.success,
+                    snackbarMessage: response.msg,
+                    openSnackbar: true
+                }))
                 this.setState(
                     Object.assign({}, this.initialState, {
                         snackbarVariant: SNACKBAR_TYPE.success,
@@ -162,13 +178,13 @@ class AddUser extends Component {
                     }))
             } else {
                 this.props.closeModal();
+                this.setState({
+                        snackbarVariant: SNACKBAR_TYPE.success,
+                        snackbarMessage: response.msg,
+                        openSnackbar: true
+                    });
             }
-            // this.setState(
-            //   Object.assign({}, this.initialState, {
-            //     snackbarVariant: SNACKBAR_TYPE.success,
-            //     snackbarMessage: response,
-            //     openSnackbar: true
-            //   }));
+            
         } catch (err) {
             this.setState({
                 disableForm: false,
@@ -180,12 +196,13 @@ class AddUser extends Component {
     }
 
     componentDidMount() {
+
         const { allowed_roles: roles, chair, co_chair: coChair, description, type, location, program, title: eventName } = this.props.editEvent;
         const eventId = Object.keys(this.props.editEvent).length && type['id'];
         const startDate = Object.keys(this.props.editEvent).length && toDate(program[0] * 1000);
         const endDate = Object.keys(this.props.editEvent).length && toDate(program[1] * 1000);
         Object.keys(this.props.editEvent).length && this.setState({
-            roles: roles.reduce((acc, item) =>  {
+            roles: roles.reduce((acc, item) => {
                 acc.push(this.ROLES[item].name);
                 return acc;
             }, []),
@@ -201,10 +218,11 @@ class AddUser extends Component {
     }
 
     render() {
+        console.log('this.state.startDate', this.state.startDate )
         return (
             <MuiThemeProvider theme={colorScheme}>
                 <React.Fragment>
-                    <p className="textAddUser">Add event</p>
+                    {Object.keys(this.props.editEvent).length ? <p className="textAddUser">Edit event {this.props.editEvent.title}</p> : <p className="textAddUser">Add event</p>}
                     <div className="add-user-container">
                         <div className="paddingInput">
                             <ValidatorForm
@@ -321,7 +339,6 @@ class AddUser extends Component {
                                     validators={['required']}
                                     errorMessages={['This field is required']}
                                     required
-                                    multiline
                                 />}
                                 {this.state.eventId !== -1 && <TextValidator
                                     name="chair"
@@ -347,7 +364,7 @@ class AddUser extends Component {
                                 />}
 
                                 <div>
-                                    <FormControlLabel
+                                    {!Object.keys(this.props.editEvent).length && <FormControlLabel
                                         control={
                                             <Checkbox
                                                 name="addAnother"
@@ -358,12 +375,12 @@ class AddUser extends Component {
                                                 color="primary" />
                                         }
                                         label="Add another event"
-                                    />
+                                    />}
                                     <input color="primary"
                                         className={`buttonAddUser${this.disableSubmit() ? ' disabled' : ''}`}
                                         disabled={this.disableSubmit() || this.state.disableForm}
                                         type="submit"
-                                        value="Add event"
+                                        value={Object.keys(this.props.editEvent).length ? "Submit changes" : 'Add event'}
                                     />
                                 </div>
                             </ValidatorForm>

@@ -21,8 +21,6 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 
-// import FormDialog from '../Dialog';
-// import EditDialog from '../Dialog/EditDetails.jsx'
 import makeRequest from '../../service/dataservice';
 import { Snackbars, SNACKBAR_TYPE } from "../Snackbar";
 
@@ -30,7 +28,6 @@ const actionsStyles = theme => ({
     root: {
         flexShrink: 0,
         color: theme.palette.text.secondary,
-        //marginLeft: theme.spacing.unit * 2.5,
     },
 });
 
@@ -167,6 +164,10 @@ class SimpleTable extends React.Component {
         this.setState({ openModal: true })
     }
 
+    handleOpenAddModal = () => {
+        this.setState({ userToModify: {}, openModal: true })
+    }
+
     handleModalClose = () => {
         this.setState({ openModal: false })
     }
@@ -245,7 +246,7 @@ class SimpleTable extends React.Component {
                                     <TableCell align="left" key={key} className={this.props.classes.header}>{item}</TableCell>
                                 )}
                                 <TableCell align="right">
-                                    <Fab size="small" color="primary" aria-label="Add" className={this.props.classes.margin} onClick={this.handleOpenModal}>
+                                    <Fab size="small" color="primary" aria-label="Add" className={this.props.classes.margin} onClick={this.handleOpenAddModal}>
                                         <AddIcon />
                                     </Fab>
                                 </TableCell>

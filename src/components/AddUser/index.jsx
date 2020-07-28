@@ -89,10 +89,10 @@ class AddUser extends Component {
   }
 
   updateisPhd(isPhd) {
-    this.setState({ isPhd, notPhd: !isPhd})
+    this.setState({ isPhd: !isPhd})
   }
 
-  disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email) ? true : false
+  disableSubmit = () => !(this.state.firstName && this.state.lastName && this.state.email && this.state.roles.length && this.state.isPhd && this.state.eduTitle) ? true : false
 
   updateUser = async () => {
     //event.preventDefault();
@@ -100,7 +100,7 @@ class AddUser extends Component {
     let roleArray = [];
     let rolesId = this.state.roles.map(item => roleArray.push(item.id))
     this.setState({ disableForm: true });
-    const userDetails = {
+    let userDetails = {
       username: this.state.email,
       password: btoa('12345678'),
       first_name: this.state.firstName,
@@ -118,6 +118,7 @@ class AddUser extends Component {
       });
       this.props.onEdit(userDetails);
       if (this.state.addAnother) {
+        userDetails = {};
         this.setState(
           Object.assign({}, this.initialState, {
             snackbarVariant: SNACKBAR_TYPE.success,
@@ -126,6 +127,12 @@ class AddUser extends Component {
           }))
       } else {
         this.props.closeModal();
+        this.setState({
+          disableForm: false,
+          snackbarMessage: response.msg,
+          snackbarVariant: SNACKBAR_TYPE.success,
+          openSnackbar: true
+        });
       }
     } catch (err) {
       this.setState({
@@ -159,7 +166,6 @@ class AddUser extends Component {
             <div className="search">
               <SearchBar />
             </div>
-            {/* <div className="paddingInput"> */}
             <ValidatorForm
               ref="form"
               className="form-add-user"
@@ -217,19 +223,6 @@ class AddUser extends Component {
                 }
                 label="Phd"
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="notPhd"
-                    type="checkbox"
-                    disabled={this.state.disableForm}
-                    onChange={() => this.updateisPhd(false)}
-                    checked={this.state.notPhd}
-                    color="primary" />
-                }
-                label="Not Phd ???? am uitat"
-              />
-              {/* <div className="paddingInput"> */}
               <FormControl className="width">
                 <InputLabel >Educational Title</InputLabel>
                 <Select
@@ -245,7 +238,6 @@ class AddUser extends Component {
                   ))}
                 </Select>
               </FormControl>
-              {/* </div> */}
               <div className="paddingInput">
                 <FormControl className="width">
                   <InputLabel htmlFor="select-multiple">Roles</InputLabel>
@@ -254,7 +246,6 @@ class AddUser extends Component {
                     value={this.state.roles}
                     onChange={this.handleChange("roles")}
                     input={<Input id="select-multiple" />}
-                    // MenuProps={MenuProps}
                     renderValue={selected => Array.prototype.join.call(selected, ', ')}
                     displayEmpty
                     disabled={this.state.disableForm}
@@ -268,7 +259,7 @@ class AddUser extends Component {
                 </FormControl>
               </div>
               <div>
-                <FormControlLabel
+                {!Object.keys(this.props.editUser).length && <FormControlLabel
                   control={
                     <Checkbox
                       name="addAnother"
@@ -279,16 +270,15 @@ class AddUser extends Component {
                       color="primary" />
                   }
                   label="Add another user"
-                />
+                />}
                 <input color="primary"
                   className={`buttonAddUser${this.disableSubmit() ? ' disabled' : ''}`}
                   disabled={this.disableSubmit() || this.state.disableForm}
                   type="submit"
-                  value="Add user"
+                  value={Object.keys(this.props.editUser).length ? "Submit changes" : 'Add user'}
                 />
               </div>
             </ValidatorForm>
-            {/* </div> */}
           </div>
         </React.Fragment>
         <Snackbars
